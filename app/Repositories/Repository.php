@@ -80,6 +80,24 @@ abstract class Repository
     /**
      *
      */
+    public function delete($id): bool
+    {
+        return DB::transaction(function () use ($id) {
+            $object = $this->model->where($this->modelIdKey, $id)->first();
+            if ($object === null) {
+                return false;
+            }
+
+            if ($object->delete()) {
+                return true;
+            }
+            return false;
+        }, 3);
+    }
+
+    /**
+     *
+     */
     protected function getReservedFields(): array
     {
         return $this->reservedFields;

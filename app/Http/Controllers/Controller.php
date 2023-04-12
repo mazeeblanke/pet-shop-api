@@ -87,9 +87,21 @@ class Controller extends BaseController
     }
 
     /**
+     * Remove the specified resource from storage.
+     */
+    public function destroy($id)
+    {
+        if ($this->repository->delete($id)) {
+            return $this->respondWithSuccess(new $this->resource(null));
+        }
+
+        return $this->respondWithError($this->getModelName() .' not found');
+    }
+
+    /**
      * @return  string
      */
-    public function getRepositoryClass($model): string
+    protected function getRepositoryClass($model): string
     {
         $class = "{$this->namespace}\Repositories\\" . $model . 'Repository';
         if (class_exists($class)) {
