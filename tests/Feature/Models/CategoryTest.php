@@ -11,9 +11,8 @@ class CategoryTest extends TestCase
    /**
      * Resource list fields
      *
-     * @var array
     */
-    protected $listFields = [
+    protected array $listFields = [
         'title',
         'uuid',
         'slug'

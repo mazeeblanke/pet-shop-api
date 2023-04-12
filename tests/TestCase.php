@@ -2,6 +2,7 @@
 
 namespace Tests;
 
+use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
 use Illuminate\Http\Response;
@@ -14,44 +15,37 @@ abstract class TestCase extends BaseTestCase
     /**
      * Factory to be used in test
      *
-     * @var Factory
-     */
-    protected $factory;
+    */
+    protected Factory $factory;
 
     /**
      * Resource name
-     *
-     * @var string
      */
-    protected $resource;
+    protected string $resource;
 
     /**
      * Model base name
      *
-     * @var string
      */
-    protected $modelName;
+    protected string $modelName;
 
     /**
      * Resource list fields
      *
-     * @var array
      */
-    protected $listFields = [];
+    protected array $listFields = [];
 
     /**
      * default model key
      *
-     * @var array
      */
-    protected $modelIdKey = 'uuid';
+    protected string $modelIdKey = 'uuid';
 
     /**
      * Resource filters
      *
-     * @var array
     */
-    protected $filters = [];
+    protected array $filters = [];
 
     public function setUp(): void
     {
