@@ -17,4 +17,12 @@ class CategoryTest extends TestCase
         'uuid',
         'slug'
     ];
+
+    /**
+     * Valid request input
+     *
+     */
+    protected array $validInput = [
+        'title' => 'test'
+    ];
 }
