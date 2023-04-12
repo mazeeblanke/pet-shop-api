@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\BrandController;
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\ProductController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -23,3 +24,8 @@ Route::get('/brands', [BrandController::class, 'index'])
 // categories
 Route::get('/categories', [CategoryController::class, 'index'])
     ->name('categories.index');
+
+
+// products
+Route::get('/products', [ProductController::class, 'index'])
+    ->name('products.index');
