@@ -14,6 +14,8 @@ class ProductFilter extends BaseFilter
     protected array $filters = [
         'title',
         'price',
+        'category',
+        'brand',
     ];
 
     /**
@@ -36,5 +38,37 @@ class ProductFilter extends BaseFilter
     protected function price($value): Builder
     {
         return $this->builder->wherePrice($value);
+    }
+
+    /**
+     * Filter category.
+     *
+    */
+    protected function category($value): Builder
+    {
+        return $this
+            ->builder
+            ->whereHas(
+                'category',
+                fn ($query) => $query->where('uuid', $value)
+            );
+    }
+
+    /**
+     * Filter brand.
+     *
+    */
+    protected function brand($value): Builder
+    {
+        $joinOnColumn = DB::raw(
+            "JSON_UNQUOTE(JSON_EXTRACT(products.metadata, '$.brand'))"
+        );
+        return $this->builder
+            ->join(
+                'brands',
+                'brands.uuid',
+                $joinOnColumn
+            )
+            ->where('brands.uuid', $value);
     }
 }
