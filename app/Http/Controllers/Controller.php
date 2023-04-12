@@ -57,6 +57,9 @@ class Controller extends BaseController
         $this->collection = $this->getCollectionClass();
     }
 
+    /**
+     * Display resource listing.
+    */
     public function index(Request $request)
     {
         $filters = [
@@ -67,6 +70,20 @@ class Controller extends BaseController
         $data = $this->repository->get($filters, $this->with);
 
         return $this->respondWithSuccess(new $this->collection($data));
+    }
+
+    /**
+     * Display the specified resource.
+    */
+    public function show($uuid)
+    {
+        $model = $this->repository->getById($uuid, $this->with);
+
+        if (! $model) {
+            return $this->respondWithError($this->getModelName() . ' not found');
+        }
+
+        return $this->respondWithSuccess(new $this->resource($model));
     }
 
     /**
@@ -88,6 +105,14 @@ class Controller extends BaseController
     protected function respondWithSuccess(JsonResource $resource): JsonResponse
     {
         return $resource->response()->setStatusCode(Response::HTTP_OK);
+    }
+
+    /**
+     *
+     */
+    protected function respondWithError(string $message, $status = Response::HTTP_NOT_FOUND, $previousException = null)
+    {
+        throw new Exception($message, $status, $previousException);
     }
 
     /**
