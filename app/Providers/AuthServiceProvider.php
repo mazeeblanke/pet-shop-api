@@ -4,6 +4,10 @@ namespace App\Providers;
 
 // use Illuminate\Support\Facades\Gate;
 
+use App\Services\Auth\Contracts\EventFactory as ContractsEventFactory;
+use App\Services\Auth\Contracts\TokenManager;
+use App\Services\Auth\Events\EventFactory;
+use App\Services\Auth\HeaderTokenManager;
 use App\Services\Auth\JWTGuard;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 use Lcobucci\JWT\Configuration;
@@ -52,6 +56,8 @@ class AuthServiceProvider extends ServiceProvider
     {
         $this
             ->registerJWTGuard()
+            ->registerTokenManager()
+            ->registerEventFactory()
             ->registerSigner()
             ->registerSecretKey()
             ->registerConfiguration();
@@ -60,6 +66,20 @@ class AuthServiceProvider extends ServiceProvider
     private function registerJWTGuard(): self
     {
         $this->app->singleton(Guard::class, fn () => $this->app->get('auth')->guard());
+
+        return $this;
+    }
+
+    private function registerEventFactory(): self
+    {
+        $this->app->singleton(ContractsEventFactory::class, EventFactory::class);
+
+        return $this;
+    }
+
+    private function registerTokenManager(): self
+    {
+        $this->app->singleton(TokenManager::class, HeaderTokenManager::class);
 
         return $this;
     }
