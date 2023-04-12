@@ -19,6 +19,8 @@ use Illuminate\Support\Facades\Route;
 // brands
 Route::get('/brands', [BrandController::class, 'index'])
     ->name('brands.index');
+Route::get('/brand/{uuid}', [BrandController::class, 'show'])
+    ->name('brands.show');
 
 
 // categories
