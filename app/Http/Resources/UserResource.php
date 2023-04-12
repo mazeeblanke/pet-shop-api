@@ -17,7 +17,11 @@ class UserResource extends JsonResource
         if (! $this->resource) {
             return [];
         }
-        
+
+        if (is_array($this->resource) && isset($this->resource['token'])) {
+            return $this->resource;
+        }
+
         return [
             'uuid' => $this->uuid,
             'first_name' => $this->first_name,
