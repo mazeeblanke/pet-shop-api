@@ -210,6 +210,20 @@ class Controller extends BaseController
     }
 
     /**
+     * retrieve form class
+    */
+    public function getFormRequestClass(string $type = 'store'): string|Exception
+    {
+        $request = "{$this->namespace}\Http\Requests\\" . ucfirst($type) . $this->modelName . 'Request';
+
+        if (class_exists($request)) {
+            return $request;
+        }
+
+        throw new Exception('Request class ' . $request . ' not found');
+    }
+
+    /**
      * extra data during create
      *
     */
