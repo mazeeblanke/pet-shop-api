@@ -98,9 +98,47 @@ class BrandController extends Controller
 
     /**
      * Display the specified resource.
+     * @OA\Get(
+     *     path="/api/v1/brand/{uuid}",
+     *     tags={"Brands"},
+     *     summary="Fetch a brand",
+     *     description="Brands API endpoint",
+     *     operationId="brands.show",
+     *     @OA\Parameter(
+     *         name="uuid",
+     *         in="path",
+     *         description="",
+     *         required=true,
+     *         @OA\Schema(
+     *             default="",
+     *             type="string",
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="ok",
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthorized"
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Page not found"
+     *     ),
+     *     @OA\Response(
+     *         response=422,
+     *         description="Unprocessable Entity"
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Internal server error"
+     *     ),
+     * )
      */
-    public function show(Brand $brand)
+    public function show($uuid)
     {
+        return parent::show($uuid);
     }
 
     /**
