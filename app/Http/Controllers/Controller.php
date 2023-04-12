@@ -75,7 +75,7 @@ class Controller extends BaseController
 
     /**
      * store a resource.
-    */
+     */
     public function store()
     {
         $request = $this->validateFormStoreRequest();
@@ -120,6 +120,20 @@ class Controller extends BaseController
         }
 
         return $this->respondWithError($this->getModelName() .' not found');
+    }
+
+    /**
+     * retrieve form class
+     */
+    public function getFormRequestClass(string $type = 'store'): string|Exception
+    {
+        $request = "{$this->namespace}\Http\Requests\\" . ucfirst($type) . $this->modelName . 'Request';
+
+        if (class_exists($request)) {
+            return $request;
+        }
+
+        throw new Exception('Request class ' . $request . ' not found');
     }
 
     /**
@@ -203,30 +217,15 @@ class Controller extends BaseController
 
     /**
      * validate request
-    */
+     */
     protected function validateFormStoreRequest(): Request
     {
         return $this->app->make($this->getFormRequestClass());
     }
 
     /**
-     * retrieve form class
-    */
-    public function getFormRequestClass(string $type = 'store'): string|Exception
-    {
-        $request = "{$this->namespace}\Http\Requests\\" . ucfirst($type) . $this->modelName . 'Request';
-
-        if (class_exists($request)) {
-            return $request;
-        }
-
-        throw new Exception('Request class ' . $request . ' not found');
-    }
-
-    /**
      * extra data during create
-     *
-    */
+     */
     protected function getExtraData(): array
     {
         return [

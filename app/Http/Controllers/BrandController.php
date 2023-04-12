@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\StoreBrandRequest;
 use App\Http\Requests\UpdateBrandRequest;
 use App\Models\Brand;
 use Illuminate\Http\Request;
@@ -91,7 +90,7 @@ class BrandController extends Controller
 
     /**
      * Store a newly created resource in storage.
-     * 
+     *
      * @OA\Post(
      *     path="/api/v1/brand/create",
      *     tags={"Brands"},
@@ -196,6 +195,7 @@ class BrandController extends Controller
 
     /**
      * Remove the specified resource from storage.
+     *
      * @OA\Delete(
      *     path="/api/v1/brand/{uuid}",
      *     tags={"Brands"},

@@ -116,20 +116,19 @@ abstract class Repository
     }
 
     /**
+     * Hook after create
+     */
+    public function afterCreate($object): void
+    {
+        $object->save();
+    }
+
+    /**
      *  Get reserved fields
      */
     protected function getReservedFields(): array
     {
         return $this->reservedFields;
-    }
-
-    /**
-     * Hook after create
-     *
-     */
-    public function afterCreate($object): void
-    {
-        $object->save();
     }
 
     /**

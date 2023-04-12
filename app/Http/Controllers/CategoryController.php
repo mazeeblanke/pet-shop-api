@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\StoreCategoryRequest;
 use App\Http\Requests\UpdateCategoryRequest;
 use App\Models\Category;
 use Illuminate\Http\Request;
@@ -91,7 +90,7 @@ class CategoryController extends Controller
 
     /**
      * Store a newly created resource in storage.
-     * 
+     *
      * @OA\Post(
      *     path="/api/v1/category/create",
      *     tags={"Categories"},
@@ -196,6 +195,7 @@ class CategoryController extends Controller
 
     /**
      * Remove the specified resource from storage.
+     *
      * @OA\Delete(
      *     path="/api/v1/category/{uuid}",
      *     tags={"Categories"},

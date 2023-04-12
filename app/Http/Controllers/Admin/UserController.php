@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\AuthController;
 use App\Http\Requests\AuthenticateRequest;
-use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 
 class UserController extends AuthController
@@ -62,7 +61,7 @@ class UserController extends AuthController
     {
         $response = parent::login($request);
 
-        if (!request()->user()->is_admin) {
+        if (! request()->user()->is_admin) {
             return $this->respondWithError('Failed to authenticate user', Response::HTTP_UNAUTHORIZED);
         }
 

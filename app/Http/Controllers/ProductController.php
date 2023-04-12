@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\StoreProductRequest;
 use App\Http\Requests\UpdateProductRequest;
 use App\Models\Product;
 use Illuminate\Http\Request;
@@ -197,6 +196,7 @@ class ProductController extends Controller
 
     /**
      * Remove the specified resource from storage.
+     *
      * @OA\Delete(
      *     path="/api/v1/product/{uuid}",
      *     tags={"Products"},
