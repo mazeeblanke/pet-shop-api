@@ -11,16 +11,16 @@ class ProductTest extends TestCase
      *
     */
     protected array $listFields = [
-        // 'brand' => [
-        //     'slug',
-        //     'title',
-        //     'uuid'
-        // ],
-        // 'category' => [
-        //     'slug',
-        //     'title',
-        //     'uuid'
-        // ],
+        'brand' => [
+            'slug',
+            'title',
+            'uuid'
+        ],
+        'category' => [
+            'slug',
+            'title',
+            'uuid'
+        ],
         'category_uuid',
         'description',
         'metadata' => [
