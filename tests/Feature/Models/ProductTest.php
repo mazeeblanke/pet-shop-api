@@ -2,6 +2,8 @@
 
 namespace Tests\Feature\Models;
 
+use App\Models\Brand;
+use App\Models\Category;
 use Tests\TestCase;
 
 class ProductTest extends TestCase
@@ -46,4 +48,25 @@ class ProductTest extends TestCase
             'uuid'
         ]
     ];
+
+    /**
+     * Set up product test
+     *
+     */
+    public function setUp(): void
+    {
+        parent::setUp();
+        $category = Category::factory()->create();
+        $brand = Brand::factory()->create();
+        $this->validInput = [
+            'title' => 'test title',
+            'price' => 12.99,
+            'description' => 'test description',
+            'category_uuid' => $category->uuid,
+            'metadata' => json_encode([
+                'image' => 'string',
+                'brand' => $brand->uuid
+            ])
+        ];
+    }
 }
