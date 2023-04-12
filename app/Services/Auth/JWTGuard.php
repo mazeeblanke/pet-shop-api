@@ -64,6 +64,8 @@ class JWTGuard implements StatefulGuard
         $this->tokenManager = $this->app->get(TokenManager::class);
         $this->eventFactory = $this->app->get(EventFactory::class);
         $this->eventDispatcher = $this->app->get(Dispatcher::class);
+        $this->provider = $this->app->get('auth')
+        ->createUserProvider($config['provider']);
     }
 
     public function user()
