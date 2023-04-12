@@ -143,13 +143,51 @@ class ProductController extends Controller
         //
     }
 
-    // /**
-    //  * Display the specified resource.
-    //  */
-    // public function show(Product $product)
-    // {
-    //     //
-    // }
+    /**
+     * Display the specified resource.
+     *
+     *  @OA\Get(
+     *     path="/api/v1/product/{uuid}",
+     *     tags={"Products"},
+     *     summary="Fetch a product",
+     *     description="Products API endpoint",
+     *     operationId="product.show",
+     *     @OA\Parameter(
+     *         name="uuid",
+     *         in="path",
+     *         description="",
+     *         required=true,
+     *         @OA\Schema(
+     *             default="",
+     *             type="string",
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="ok",
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthorized"
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Page not found"
+     *     ),
+     *     @OA\Response(
+     *         response=422,
+     *         description="Unprocessable Entity"
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Internal server error"
+     *     ),
+     * )
+     */
+    public function show($uuid)
+    {
+        return parent::show($uuid);
+    }
 
     /**
      * Update the specified resource in storage.
