@@ -31,4 +31,19 @@ class ProductTest extends TestCase
         'title',
         'uuid'
     ];
+
+    /**
+     * Product filters
+     *
+    */
+    protected array $filters = [
+        'title',
+        'price',
+        'category' => [
+            'uuid'
+        ],
+        'brand' => [
+            'uuid'
+        ]
+    ];
 }

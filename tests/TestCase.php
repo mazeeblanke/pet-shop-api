@@ -2,6 +2,8 @@
 
 namespace Tests;
 
+use App\Models\User;
+use App\Services\Auth\JWT;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
@@ -47,11 +49,38 @@ abstract class TestCase extends BaseTestCase
     */
     protected array $filters = [];
 
+    /**
+     * Test user
+     *
+     */
+    protected User $user;
+
+    /**
+     * Token string
+     *
+     */
+    protected string $token;
+
+    /**
+     * Valid request input
+     *
+     */
+    protected array $validInput = [];
+
     public function setUp(): void
     {
         parent::setUp();
         $this->factory = $this->getModelClass()::factory();
         $this->resource = $this->getResource();
+        $this->setUser();
+    }
+
+    protected function setUser()
+    {
+        $this->user = User::factory()->create();
+        auth()->login($this->user);
+        $this->token = JWT::getAccessToken();
+        auth()->logout();
     }
 
     /**
