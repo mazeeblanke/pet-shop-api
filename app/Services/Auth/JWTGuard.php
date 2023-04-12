@@ -64,6 +64,12 @@ class JWTGuard implements StatefulGuard
         $this->setAccessToken($accessToken);
     }
 
+    public function logout(): void
+    {
+        $this->user = null;
+        $this->accessToken = null;
+    }
+
     public function issueAccessToken(JWTAuthenticatable $user): Token
     {
         $issuedAt = new \DateTimeImmutable();
