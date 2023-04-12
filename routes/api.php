@@ -59,6 +59,8 @@ Route::post('/user/login', [UserController::class, 'login'])
     ->name('user.login');
 Route::get('/user/logout', [UserController::class, 'logout'])
     ->name('user.logout');
+Route::post('/user/create', [UserController::class, 'store'])
+    ->name('user.store');
 
 // admin
 Route::group(['prefix' => 'admin'], function () {
