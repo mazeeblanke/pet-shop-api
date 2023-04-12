@@ -7,6 +7,7 @@ use Exception;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
+use App\Services\Filtering\Behaviors\HandleFilters;
 
 abstract class Repository
 {
@@ -31,9 +32,13 @@ abstract class Repository
         $limit = $filters['limit'];
         $page = $filters['page'];
 
-        return $this->model->with($with)
-            ->filter($this->getFilter())
-            ->paginate($limit, ['*'], 'page', $page);
+        $builder = $this->model->with($with);
+
+        if ($this->supportsFiltering()) {
+            $builder = $builder->filter($this->getFilter());
+        }
+
+        return $builder->paginate($limit, ['*'], 'page', $page);
     }
 
     /**
@@ -49,5 +54,13 @@ abstract class Repository
         }
 
         throw new Exception('Filter class ' . $filter . ' Does not exist');
+    }
+
+    public function supportsFiltering(): bool
+    {
+        return in_array(
+            HandleFilters::class,
+            class_uses($this->model)
+        );
     }
 }
