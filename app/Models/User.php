@@ -55,6 +55,18 @@ class User extends Authenticatable implements JWTAuthenticatable
 
     public function getClaims(): array
     {
-        return [];
+        return [
+            'user_uuid' => $this->uuid,
+        ];
+    }
+
+    public function getAuthIdentifierName()
+    {
+        return 'uuid';
+    }
+
+    public function isAdmin(): bool
+    {
+        return $this->is_admin;
     }
 }
