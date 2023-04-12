@@ -37,6 +37,26 @@ class JWTGuard implements StatefulGuard
         $this->builder = $this->configuration->builder();
     }
 
+    public function attempt(array $credentials = [], $remember = false): bool
+    {
+        $user = $this->provider->retrieveByCredentials($credentials);
+
+        if (! ($user && $this->validateCredentials($credentials, $user))) {
+            return false;
+        }
+
+        $this->login($user, $remember);
+
+        return true;
+    }
+
+    public function login(JWTAuthenticatable $user, $remember = false): void
+    {
+        $this->setUser($user);
+
+        $this->issueAccessToken($user);
+    }
+
     public function issueAccessToken(JWTAuthenticatable $user): Token
     {
         $issuedAt = new \DateTimeImmutable();
@@ -86,5 +106,14 @@ class JWTGuard implements StatefulGuard
     public function getAccessToken(): string|null
     {
         return Optional($this->accessToken)->toString();
+    }
+
+    public function validateCredentials(
+        array $credentials,
+        JWTAuthenticatable $user
+    ): bool {
+        return $this
+            ->provider
+            ->validateCredentials($user, $credentials);
     }
 }
