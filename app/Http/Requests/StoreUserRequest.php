@@ -24,10 +24,10 @@ class StoreUserRequest extends FormRequest
         return [
             'first_name' => 'required|string',
             'last_name' => 'required|string',
-            'email' => 'required|string|unique:users,email',
+            'email' => 'required|email|string|unique:users,email',
             'password' => 'required|string|confirmed',
             'password_confirmation' => 'required|string',
-            'avatar' => 'uuid',
+            // 'avatar' => 'uuid',
             'address' => 'required|string',
             'phone_number' => 'required|string',
             // 'is_marketing' => 'string',
