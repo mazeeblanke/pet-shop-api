@@ -116,7 +116,7 @@ abstract class Repository
     }
 
     /**
-     *
+     *  Get reserved fields
      */
     protected function getReservedFields(): array
     {
@@ -124,7 +124,16 @@ abstract class Repository
     }
 
     /**
+     * Hook after create
      *
+     */
+    public function afterCreate($object): void
+    {
+        $object->save();
+    }
+
+    /**
+     *  Get filter instance
      */
     private function getFilter(): Filter
     {
@@ -138,6 +147,9 @@ abstract class Repository
         throw new Exception('Filter class ' . $filter . ' Does not exist');
     }
 
+    /**
+     * Check for filtering support by model
+     */
     private function supportsFiltering(): bool
     {
         return in_array(
