@@ -58,6 +58,26 @@ abstract class Repository
     }
 
     /**
+     *  store a resource
+     */
+    public function create(array $fields): Model
+    {
+        return DB::transaction(function () use ($fields) {
+            $object = $this->model
+                ->create(Arr::except(
+                    $fields,
+                    $this->getReservedFields()
+                ));
+
+            $object->save();
+
+            $this->afterCreate($object);
+
+            return $object;
+        }, 3);
+    }
+
+    /**
      * Update fields
      */
     public function update(mixed $id, array $fields): Model|bool
@@ -78,7 +98,7 @@ abstract class Repository
     }
 
     /**
-     *
+     * Delete a resource
      */
     public function delete($id): bool
     {
