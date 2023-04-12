@@ -39,6 +39,10 @@ class UserTest extends TestCase
         'marketing'
     ];
 
+    /**
+     * Set up user test
+     *
+     */
     public function setUp(): void
     {
         parent::setUp();
@@ -144,15 +148,17 @@ class UserTest extends TestCase
     }
 
     /**
-     * [getBaseUrl description]
+     * Get base url
      *
-     * @return  string  [return description]
      */
     protected function getBaseUrl($resource = null): string
     {
         return '/api/v1/' . ($resource ?? $this->resource) . '/';
     }
 
+    /**
+     * Get headers
+     */
     protected function getHeaders()
     {
         return [];
