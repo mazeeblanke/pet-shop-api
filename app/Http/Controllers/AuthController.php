@@ -8,13 +8,6 @@ use Illuminate\Http\Response;
 
 class AuthController extends Controller
 {
-    public function getExtraData(): array
-    {
-        return [
-            'password' => bcrypt(request()->password),
-        ];
-    }
-
     public function login(AuthenticateRequest $request)
     {
         $user = null;

@@ -80,7 +80,7 @@ class Controller extends BaseController
     {
         $request = $this->validateFormStoreRequest();
 
-        $data = array_merge($request->all(), ['uuid' => Str::uuid()], $this->getExtraData());
+        $data = array_merge($request->all(), ['uuid' => Str::uuid()], $this->getExtraData($request));
 
         try {
             $model = $this->repository->create($data);
@@ -226,10 +226,10 @@ class Controller extends BaseController
     /**
      * extra data during create
      */
-    protected function getExtraData(): array
+    protected function getExtraData(Request $request): array
     {
         return [
-            'slug' => Str::slug(request()->title),
+            'slug' => Str::slug($request->title),
         ];
     }
 }
