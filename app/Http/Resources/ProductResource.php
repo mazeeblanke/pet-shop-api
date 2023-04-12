@@ -31,7 +31,9 @@ class ProductResource extends JsonResource
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
             'deleted_at' => $this->deleted_at,
-            'metadata' => $this->metadata
+            'metadata' => $this->metadata,
+            'category' => new CategoryResource($this->category),
+            'brand' => new BrandResource($this->brand),
         ];
     }
 
