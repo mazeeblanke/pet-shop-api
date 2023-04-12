@@ -67,6 +67,28 @@ abstract class TestCase extends BaseTestCase
      */
     protected array $validInput = [];
 
+    /**
+     * Invalid request input
+     *
+     */
+    protected array $invalidInput = [];
+
+    /**
+     * Error msgs
+     *
+     */
+    protected array $errorMsgs = [];
+
+    /**
+     * Resource create fields
+     *
+    */
+    protected array $createFields = [];
+
+    /**
+     * Set up tests
+     *
+     */
     public function setUp(): void
     {
         parent::setUp();
@@ -237,6 +259,39 @@ abstract class TestCase extends BaseTestCase
             'errors' => [],
             'extra' => []
         ]);
+    }
+
+    /**
+     * Test to create
+     */
+    public function test_can_create(): void
+    {
+        if ($this->resource != 'user') {
+            $response = $this->postJson($this->getBaseUrl() . 'create', $this->invalidInput);
+            $response->assertStatus(Response::HTTP_UNAUTHORIZED);
+            $response->assertJsonFragment([
+                "success" => 0,
+                "data" => [],
+                "error" => Response::$statusTexts[Response::HTTP_UNAUTHORIZED],
+                "errors" => []
+            ]);
+        }
+
+        $response = $this->postJson($this->getBaseUrl() . 'create', $this->invalidInput, $this->getHeaders());
+        $response->assertStatus(Response::HTTP_UNPROCESSABLE_ENTITY);
+        $response->assertJsonFragment($this->errorMsgs);
+
+        $response = $this->postJson($this->getBaseUrl(). 'create', $this->validInput, $this->getHeaders());
+        $response->assertStatus(Response::HTTP_OK);
+        $response->assertJsonStructure([
+            'success',
+            'data' => $this->createFields,
+            'error',
+            'errors',
+            'extra'
+        ]);
+
+        $this->assertDatabaseHas($this->getTableName(), $this->getData($response->json()["data"], true));
     }
 
     private function test_custom_filtering($page, $limit, $url, $resources)
