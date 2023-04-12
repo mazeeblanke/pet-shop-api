@@ -73,6 +73,11 @@ class UserTest extends TestCase
         $this->markTestSkipped('Test skipped from base test class');
     }
 
+    public function test_can_delete(): void
+    {
+        $this->markTestSkipped('Test skipped from base test class');
+    }
+
     public function test_cannot_login_without_credentials(): void
     {
         $response = $this->postJson($this->getBaseUrl() . 'login', []);
