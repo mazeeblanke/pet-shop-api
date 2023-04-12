@@ -11,6 +11,8 @@ use App\Services\Auth\HeaderTokenManager;
 use App\Services\Auth\JWTGuard;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 use Lcobucci\JWT\Configuration;
+use Lcobucci\JWT\Signer;
+use Lcobucci\JWT\Signer\Key;
 use Lcobucci\JWT\Signer\Key\InMemory;
 
 class AuthServiceProvider extends ServiceProvider
