@@ -93,6 +93,20 @@ class UserTest extends TestCase
         ]);
     }
 
+    public function test_can_logout():void
+    {
+        auth()->login($this->user);
+        $response = $this->getJson($this->getBaseUrl() . 'logout');
+        $response->assertStatus(Response::HTTP_OK);
+        $response->assertJsonStructure([
+            'success',
+            'data' => [],
+            'error',
+            'errors',
+            'extra'
+        ]);
+    }
+
     /**
      * [getBaseUrl description]
      *
