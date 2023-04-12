@@ -100,6 +100,13 @@ abstract class TestCase extends BaseTestCase
         return Str::singular($resource);
     }
 
+    protected function getHeaders()
+    {
+        return [
+            'Authorization' => 'Bearer ' . $this->token
+        ];
+    }
+
     /**
      * Get the model resource plural name
      *
@@ -191,6 +198,18 @@ abstract class TestCase extends BaseTestCase
 
         // Test pagination
         $this->test_pagination($page, $limit, $url, $resources, $itemsCount);
+    }
+
+    /**
+     *  Test can delete.
+     */
+    public function test_can_delete(): void
+    {
+        $resource = $this->factory->create();
+
+        $this->test_cannot_delete_with_auth($resource);
+
+        $this->test_can_delete_with_auth($resource);
     }
 
     /**
@@ -311,5 +330,32 @@ abstract class TestCase extends BaseTestCase
         $response->assertJsonFragment([
             'title' => $resources[$page + $limit]->title
         ]);
+    }
+
+    private function test_cannot_delete_with_auth($resource)
+    {
+        $response = $this->deleteJson($this->getBaseUrl() . $resource->{$this->modelIdKey});
+        $response->assertStatus(Response::HTTP_UNAUTHORIZED);
+        $response->assertJson([
+            'success' => 0,
+            'data' => [],
+            'error' => Response::$statusTexts[Response::HTTP_UNAUTHORIZED],
+            'errors' => [],
+            'trace' => []
+        ]);
+    }
+
+    private function test_can_delete_with_auth($resource)
+    {
+        $response = $this->deleteJson($this->getBaseUrl() . $resource->{$this->modelIdKey}, [], $this->getHeaders());
+        $response->assertStatus(Response::HTTP_OK);
+        $response->assertStatus(Response::HTTP_OK)
+            ->assertJson([
+                "success" => 1,
+                "data" => [],
+                "error" => null,
+                "errors" => [],
+                "extra" => []
+            ]);
     }
 }
