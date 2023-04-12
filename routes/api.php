@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\BrandController;
+use App\Http\Controllers\CategoryController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -17,3 +18,8 @@ use Illuminate\Support\Facades\Route;
 // brands
 Route::get('/brands', [BrandController::class, 'index'])
     ->name('brands.index');
+
+
+// categories
+Route::get('/categories', [CategoryController::class, 'index'])
+    ->name('categories.index');
