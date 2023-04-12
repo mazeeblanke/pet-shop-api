@@ -48,8 +48,8 @@ class Handler extends ExceptionHandler
 
     public function render($request, Throwable $e)
     {
-        $errorCode = $e->status ?? $e->getCode() ?? 404;
-        
+        $errorCode = $e->status ?? $e->getCode() ?: 422;
+
         // if ($request->expectsJson()) {
         return (new ErrorResource($e))->response()->setStatusCode($errorCode);
         // }
