@@ -15,6 +15,15 @@ class Product extends Model
         'metadata' => 'array',
     ];
 
+    protected $fillable = [
+        'uuid',
+        'category_uuid',
+        'title',
+        'description',
+        'price',
+        'metadata',
+    ];
+
     public function getBrandUuidAttribute()
     {
         $metadata = $this->metadata;
