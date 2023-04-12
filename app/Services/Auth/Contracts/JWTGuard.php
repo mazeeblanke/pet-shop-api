@@ -6,5 +6,5 @@ use Illuminate\Contracts\Auth\StatefulGuard;
 
 interface JWTGuard extends StatefulGuard
 {
-    public function getAccessToken();
+    public function getAccessToken(): string|null;
 }
