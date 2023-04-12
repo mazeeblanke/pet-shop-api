@@ -1,6 +1,6 @@
 # Pet Shop
 
-A pet store implementation.
+A pet shop implementation.
 
 ## Requirements
  - PHP == 8.2
