@@ -12,7 +12,6 @@ abstract class BaseFilter implements Filter
 {
     /**
      * The Eloquent Query builder.
-     *
      */
     protected Builder $builder;
 
@@ -22,15 +21,13 @@ abstract class BaseFilter implements Filter
 
     /**
      * Default filters
-     *
-    */
+     */
     protected array $defaultFilters = [
         'orderByColumn' => [],
     ];
 
     /**
      * Specific filters.
-     *
      */
     protected array $filters = [];
 
