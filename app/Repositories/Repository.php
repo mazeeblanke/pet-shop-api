@@ -25,6 +25,10 @@ abstract class Repository
         return $this->model->$method(...$parameters);
     }
 
+    /**
+     * Fetch all
+     *
+     */
     public function get(
         array $filters = [],
         array $with = []
@@ -42,9 +46,20 @@ abstract class Repository
     }
 
     /**
-     *
+     * Fetch by id
      */
-    public function getFilter(): Filter
+    public function getById($uuid, array $with = []): Model|null
+    {
+        return $this->model
+            ->with($with)
+            ->where($this->modelIdKey, $uuid)
+            ->first();
+    }
+
+    /**
+     *
+    */
+    private function getFilter(): Filter
     {
         $namepace = trim(app()->getNamespace(), '\\') . "\Services\Filtering\\";
         $filter = $namepace . class_basename($this->model).'Filter';
@@ -56,7 +71,7 @@ abstract class Repository
         throw new Exception('Filter class ' . $filter . ' Does not exist');
     }
 
-    public function supportsFiltering(): bool
+    private function supportsFiltering(): bool
     {
         return in_array(
             HandleFilters::class,
