@@ -59,7 +59,7 @@ class UserTest extends TestCase
         ];
     }
 
-    public function test_can_view(): void
+    public function test_can_show(): void
     {
         $this->markTestSkipped('Test skipped from base test class');
     }
@@ -69,16 +69,18 @@ class UserTest extends TestCase
         $this->markTestSkipped('Test skipped from base test class');
     }
 
-    public function test_can_login_a_user():void
+    public function test_cannot_login_without_credentials()
     {
         $response = $this->postJson($this->getBaseUrl() . 'login', []);
         $response->assertStatus(Response::HTTP_UNPROCESSABLE_ENTITY);
+    }
 
+    public function test_can_login_a_user_with_credentials():void
+    {
         $response = $this->postJson($this->getBaseUrl() . 'login', [
             'email' => $this->user->email,
             'password' => $this->validInput['password']
         ]);
-
         $response->assertStatus(Response::HTTP_OK);
         $response->assertJsonStructure([
             'success',
