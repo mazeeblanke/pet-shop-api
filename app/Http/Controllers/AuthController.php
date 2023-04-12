@@ -8,6 +8,13 @@ use Illuminate\Http\Response;
 
 class AuthController extends Controller
 {
+    public function getExtraData(): array
+    {
+        return [
+            'password' => bcrypt(request()->password),
+        ];
+    }
+
     public function login(AuthenticateRequest $request)
     {
         $user = null;
@@ -18,7 +25,10 @@ class AuthController extends Controller
         }
 
         if (! $user) {
-            return $this->respondWithError(Response::$statusTexts[Response::HTTP_UNAUTHORIZED], 422);
+            return $this->respondWithError(
+                Response::$statusTexts[Response::HTTP_UNAUTHORIZED],
+                422
+            );
         }
 
         $this->repository->update($user->uuid, [

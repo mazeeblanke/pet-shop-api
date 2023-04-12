@@ -1,21 +1,23 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Admin;
 
+use App\Http\Controllers\AuthController;
 use App\Http\Requests\AuthenticateRequest;
+use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 
 class UserController extends AuthController
 {
     /**
      * @OA\Post(
-     *     path="/api/v1/user/login",
-     *     tags={"User"},
-     *     summary="Login an User account",
-     *     description="Users API endpoint",
-     *     operationId="user.login",
+     *     path="/api/v1/admin/login",
+     *     tags={"Admin"},
+     *     summary="Login an Admin account",
+     *     description="Admin API endpoint",
+     *     operationId="admin.login",
      *     @OA\RequestBody(
-     *         description="User object",
+     *         description="",
      *         required=true,
      *         @OA\MediaType(
      *             mediaType="application/x-www-form-urlencoded",
@@ -58,22 +60,16 @@ class UserController extends AuthController
      */
     public function login(AuthenticateRequest $request)
     {
-        $response = parent::login($request);
-
-        if (request()->user()->is_admin) {
-            return $this->respondWithError('Failed to authenticate user', Response::HTTP_UNAUTHORIZED);
-        }
-
-        return $response;
+        return parent::login($request);
     }
 
     /**
      * @OA\Get(
-     *     path="/api/v1/user/logout",
-     *     tags={"User"},
-     *     summary="Logout an User account",
-     *     description="Users API endpoint",
-     *     operationId="user.logout",
+     *     path="/api/v1/admin/logout",
+     *     tags={"Admin"},
+     *     summary="Logout an Admin account",
+     *     description="Admin API endpoint",
+     *     operationId="admin.logout",
      *     @OA\Response(
      *         response=200,
      *         description="ok",

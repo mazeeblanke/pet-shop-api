@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\UserController as AdminUserController;
 use App\Http\Controllers\BrandController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ProductController;
@@ -40,3 +41,12 @@ Route::post('/user/login', [UserController::class, 'login'])
     ->name('user.login');
 Route::get('/user/logout', [UserController::class, 'logout'])
     ->name('user.logout');
+
+// admin
+Route::group(['prefix' => 'admin'], function () {
+    Route::post('/login', [AdminUserController::class, 'login'])
+        ->name('admin.login');
+    Route::get('/logout', [AdminUserController::class, 'logout'])
+        ->name('admin.logout');
+});
+
