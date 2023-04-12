@@ -57,7 +57,6 @@ abstract class TestCase extends BaseTestCase
     /**
      * Get the model resource singular name
      *
-     * @return  string
      */
     protected function getResource(): string
     {
@@ -68,7 +67,6 @@ abstract class TestCase extends BaseTestCase
     /**
      * Get the model resource plural name
      *
-     * @return  string
      */
     protected function getTableName(): string
     {
@@ -78,7 +76,6 @@ abstract class TestCase extends BaseTestCase
     /**
      * Get the model class name
      *
-     * @return  string
      */
     protected function getModelClass(): string
     {
@@ -88,7 +85,6 @@ abstract class TestCase extends BaseTestCase
     /**
      * Get the model base name
      *
-     * @return  string
      */
     protected function getBaseName(): string
     {
@@ -96,13 +92,45 @@ abstract class TestCase extends BaseTestCase
     }
 
     /**
-     * [getBaseUrl description]
+     * Get base url
      *
-     * @return  string  [return description]
      */
     protected function getBaseUrl($resource = null): string
     {
         return '/api/v1/' . ($resource ?? $this->resource) . '/';
+    }
+
+    /**
+     * Get the resource data
+     *
+     */
+    protected function getData(array $resource, bool $ignoreNested = false): array
+    {
+        $data = [];
+
+        foreach ($this->listFields as $key => $field) {
+            if ($ignoreNested) continue;
+
+            if (is_array($field)) {
+                $nestedData = [];
+
+                foreach ($field as $nestedField) {
+                    if (isset($resource[$key][$nestedField])) {
+                        $nestedData[$nestedField] = $resource[$key][$nestedField];
+                    } else {
+                        $nestedData = null;
+                        break;
+                    }
+                }
+
+                $data[$key] = $nestedData;
+
+            } else {
+                $data[$field] = $resource[$field] ?? null;
+            }
+        }
+
+        return $data;
     }
 
     /**
@@ -200,5 +228,33 @@ abstract class TestCase extends BaseTestCase
        $response->assertJsonFragment([
         'title' => $resources[$page + $limit]->title
        ]);
+    }
+
+    /**
+     *  Test if the correct fields are returned by the resource model.
+     */
+    public function test_can_show(): void
+    {
+        $resource = $this->factory->create();
+        $response = $this->getJson($this->getBaseUrl() . $resource->created_at);
+        $response->assertStatus(Response::HTTP_NOT_FOUND);
+        $response->assertJsonFragment([
+            'success' => 0,
+            'data' => [],
+            'error' => $this->getBaseName() . ' not found',
+            'errors' => [],
+            // 'trace' => []
+        ]);
+
+        $response = $this->getJson($this->getBaseUrl() . $resource->{$this->modelIdKey});
+        $response->assertStatus(Response::HTTP_OK);
+
+        $response->assertJson([
+            'success' => 1,
+            'data' => $this->getData($response->json()['data']),
+            'error' => null,
+            'errors' => [],
+            'extra' => []
+        ]);
     }
 }
