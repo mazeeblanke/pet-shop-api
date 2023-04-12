@@ -22,7 +22,7 @@ class StoreBrandRequest extends FormRequest
     public function rules(): array
     {
         return [
-
+            'title' => 'required|string',
         ];
     }
 }
