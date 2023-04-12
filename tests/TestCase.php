@@ -266,32 +266,11 @@ abstract class TestCase extends BaseTestCase
      */
     public function test_can_create(): void
     {
-        if ($this->resource != 'user') {
-            $response = $this->postJson($this->getBaseUrl() . 'create', $this->invalidInput);
-            $response->assertStatus(Response::HTTP_UNAUTHORIZED);
-            $response->assertJsonFragment([
-                "success" => 0,
-                "data" => [],
-                "error" => Response::$statusTexts[Response::HTTP_UNAUTHORIZED],
-                "errors" => []
-            ]);
-        }
+        $this->test_cannot_create_without_auth_for_non_user_resource();
 
-        $response = $this->postJson($this->getBaseUrl() . 'create', $this->invalidInput, $this->getHeaders());
-        $response->assertStatus(Response::HTTP_UNPROCESSABLE_ENTITY);
-        $response->assertJsonFragment($this->errorMsgs);
+        $this->test_cannot_create_with_invalid_input();
 
-        $response = $this->postJson($this->getBaseUrl(). 'create', $this->validInput, $this->getHeaders());
-        $response->assertStatus(Response::HTTP_OK);
-        $response->assertJsonStructure([
-            'success',
-            'data' => $this->createFields,
-            'error',
-            'errors',
-            'extra'
-        ]);
-
-        $this->assertDatabaseHas($this->getTableName(), $this->getData($response->json()["data"], true));
+        $this->test_can_create_with_valid_input_and_auth();
     }
 
     private function test_custom_filtering($page, $limit, $url, $resources)
@@ -412,5 +391,52 @@ abstract class TestCase extends BaseTestCase
                 "errors" => [],
                 "extra" => []
             ]);
+    }
+
+    private function test_cannot_create_without_auth_for_non_user_resource()
+    {
+        if ($this->resource != 'user') {
+            $response = $this->postJson($this->getBaseUrl() . 'create', $this->invalidInput);
+            $response->assertStatus(Response::HTTP_UNAUTHORIZED);
+            $response->assertJsonFragment([
+                "success" => 0,
+                "data" => [],
+                "error" => Response::$statusTexts[Response::HTTP_UNAUTHORIZED],
+                "errors" => []
+            ]);
+        }
+    }
+
+    private function test_cannot_create_with_invalid_input()
+    {
+        $response = $this->postJson(
+            $this->getBaseUrl() . 'create',
+            $this->invalidInput,
+            $this->getHeaders()
+        );
+        $response->assertStatus(Response::HTTP_UNPROCESSABLE_ENTITY);
+        $response->assertJsonFragment($this->errorMsgs);
+    }
+
+    private function test_can_create_with_valid_input_and_auth()
+    {
+        $response = $this->postJson(
+            $this->getBaseUrl(). 'create',
+            $this->validInput,
+            $this->getHeaders()
+        );
+        $response->assertStatus(Response::HTTP_OK);
+        $response->assertJsonStructure([
+            'success',
+            'data' => $this->createFields,
+            'error',
+            'errors',
+            'extra'
+        ]);
+
+        $this->assertDatabaseHas(
+            $this->getTableName(),
+            $this->getData($response->json()["data"], true)
+        );
     }
 }
