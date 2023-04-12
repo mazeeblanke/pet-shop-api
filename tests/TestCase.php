@@ -173,11 +173,98 @@ abstract class TestCase extends BaseTestCase
         $resources = $this->factory->count($itemsCount)->create();
         $url = $this->getBaseUrl(Str::plural($this->resource));
 
+        // Test pure listing
+        $this->test_listing($page, $limit, $url, $resources, $itemsCount);
+
+        // Test basic Filtering
+        $this->test_basic_filtering($page, $limit, $url, $resources, $itemsCount);
+
+        // Test custom Filtering
+        $this->test_custom_filtering($page, $limit, $url, $resources);
+
+        // Test pagination
+        $this->test_pagination($page, $limit, $url, $resources, $itemsCount);
+    }
+
+    /**
+     *  Test if the correct fields are returned by the resource model.
+     */
+    public function test_can_show(): void
+    {
+        $resource = $this->factory->create();
+        $response = $this->getJson($this->getBaseUrl() . $resource->created_at);
+        $response->assertStatus(Response::HTTP_NOT_FOUND);
+        $response->assertJsonFragment([
+            'success' => 0,
+            'data' => [],
+            'error' => $this->getBaseName() . ' not found',
+            'errors' => [],
+            // 'trace' => []
+        ]);
+
+        $response = $this->getJson($this->getBaseUrl() . $resource->{$this->modelIdKey});
+        $response->assertStatus(Response::HTTP_OK);
+        $response->assertJson([
+            'success' => 1,
+            'data' => $this->getData($response->json()['data']),
+            'error' => null,
+            'errors' => [],
+            'extra' => []
+        ]);
+    }
+
+    private function test_custom_filtering($page, $limit, $url, $resources)
+    {
+        if ($this->filters) {
+            forEach($this->filters as $filterKey => $filter) {
+                if (is_array($filter)) {
+                    forEach($filter as $filterVal) {
+                        $response = $this->call('GET', $url, [
+                            'page' => $page,
+                            'limit' => $limit,
+                            $filterKey => $resources[0]->{$filterKey}[$filterVal]
+                        ]);
+
+                        $response->assertJsonCount(1, 'data');
+                    }
+                } else {
+                    $response = $this->call('GET', $url, [
+                        'page' => $page,
+                        'limit' => $limit,
+                        $filter => $resources[0]->{$filter}
+                    ]);
+                    $response->assertJsonCount(1, 'data');
+                }
+            }
+        }
+    }
+
+    private function test_basic_filtering($page, $limit, $url, $resources, $itemsCount)
+    {
+        $response = $this->call('GET', $url, [
+            'page' => $page,
+            'sortBy' => 'id',
+            'desc' => true,
+            'limit' => $limit
+        ]);
+        $response->assertJsonFragment([
+            'title' => $resources[$itemsCount - 2]->title
+        ]);
+        $response = $this->call('GET', $url, [
+            'page' => $page,
+            'sortBy' => 'wrongcolumn',
+            'desc' => true,
+            'limit' => $limit
+        ]);
+        $response->assertJsonCount($limit, 'data');
+    }
+
+    private function test_listing($page, $limit, $url)
+    {
         $response = $this->call('GET', $url, [
             'page' => $page,
             'limit' => $limit
         ]);
-
         $response->assertSuccessful();
         $response->assertStatus(Response::HTTP_OK);
         $response->assertJsonCount(10, 'data');
@@ -204,86 +291,18 @@ abstract class TestCase extends BaseTestCase
             'last_page',
             'last_page_url'
         ]);
+    }
 
-        // Basic Filter
-        $response = $this->call('GET', $url, [
-            'page' => $page,
-            'sortBy' => 'id',
-            'desc' => true,
-            'limit' => $limit
-        ]);
-        $response->assertJsonFragment([
-            'title' => $resources[$itemsCount - 2]->title
-        ]);
-
-        $response = $this->call('GET', $url, [
-            'page' => $page,
-            'sortBy' => 'wrongcolumn',
-            'desc' => true,
-            'limit' => $limit
-        ]);
-        $response->assertJsonCount($limit, 'data');
-
-        // Test Filters
-        if ($this->filters) {
-            forEach($this->filters as $filterKey => $filter) {
-                if (is_array($filter)) {
-                    forEach($filter as $filterVal) {
-                        $response = $this->call('GET', $url, [
-                            'page' => $page,
-                            'limit' => $limit,
-                            $filterKey => $resources[0]->{$filterKey}[$filterVal]
-                        ]);
-
-                        $response->assertJsonCount(1, 'data');
-                    }
-                } else {
-                    $response = $this->call('GET', $url, [
-                        'page' => $page,
-                        'limit' => $limit,
-                        $filter => $resources[0]->{$filter}
-                    ]);
-                    $response->assertJsonCount(1, 'data');
-                }
-            }
-        }
-
+    private function test_pagination($page, $limit, $url, $resources)
+    {
         $page = 2;
         $response = $this->call('GET', $url, [
             'page' => $page,
             'limit' => $limit
         ]);
 
-       $response->assertJsonFragment([
-        'title' => $resources[$page + $limit]->title
-       ]);
-    }
-
-    /**
-     *  Test if the correct fields are returned by the resource model.
-     */
-    public function test_can_show(): void
-    {
-        $resource = $this->factory->create();
-        $response = $this->getJson($this->getBaseUrl() . $resource->created_at);
-        $response->assertStatus(Response::HTTP_NOT_FOUND);
         $response->assertJsonFragment([
-            'success' => 0,
-            'data' => [],
-            'error' => $this->getBaseName() . ' not found',
-            'errors' => [],
-            // 'trace' => []
-        ]);
-
-        $response = $this->getJson($this->getBaseUrl() . $resource->{$this->modelIdKey});
-        $response->assertStatus(Response::HTTP_OK);
-
-        $response->assertJson([
-            'success' => 1,
-            'data' => $this->getData($response->json()['data']),
-            'error' => null,
-            'errors' => [],
-            'extra' => []
+            'title' => $resources[$page + $limit]->title
         ]);
     }
 }
