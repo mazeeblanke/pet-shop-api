@@ -10,16 +10,15 @@ class ProductFilter extends BaseFilter
     /**
      * Specific filters.
      *
-     * @var array
      */
-    protected $filters = [
+    protected array $filters = [
         'title',
+        'price',
     ];
 
     /**
      * Filter title.
      *
-     * @return Builder
      */
     protected function title(): Builder
     {
@@ -28,5 +27,14 @@ class ProductFilter extends BaseFilter
             ->whereTitle(
                 $this->request->title
             );
+    }
+
+    /**
+     * Filter price.
+     *
+     */
+    protected function price($value): Builder
+    {
+        return $this->builder->wherePrice($value);
     }
 }
