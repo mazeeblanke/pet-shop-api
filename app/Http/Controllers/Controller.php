@@ -12,6 +12,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Http\Response;
 use Illuminate\Routing\Controller as BaseController;
+use Str;
 
 /**
  * @OA\Info(
@@ -70,6 +71,29 @@ class Controller extends BaseController
         $data = $this->repository->get($filters, $this->with);
 
         return $this->respondWithSuccess(new $this->collection($data));
+    }
+
+    /**
+     * store a resource.
+    */
+    public function store()
+    {
+        $request = $this->validateFormStoreRequest();
+
+        $data = array_merge($request->all(), ['uuid' => Str::uuid()], $this->getExtraData());
+
+        try {
+            $model = $this->repository->create($data);
+        } catch (Exception $e) {
+            return $this
+                ->respondWithError(
+                    'Failed to create new '. $this->getModelName(),
+                    Response::HTTP_UNPROCESSABLE_ENTITY,
+                    $e
+                );
+        }
+
+        return $this->respondWithSuccess(new $this->resource($model));
     }
 
     /**
@@ -175,5 +199,24 @@ class Controller extends BaseController
     protected function getNamespace(): string
     {
         return $this->namespace ?? trim($this->app->getNamespace(), '\\');
+    }
+
+    /**
+     * validate request
+    */
+    protected function validateFormStoreRequest(): Request
+    {
+        return $this->app->make($this->getFormRequestClass());
+    }
+
+    /**
+     * extra data during create
+     *
+    */
+    protected function getExtraData(): array
+    {
+        return [
+            'slug' => Str::slug(request()->title),
+        ];
     }
 }
