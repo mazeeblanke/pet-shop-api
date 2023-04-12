@@ -20,9 +20,18 @@ class User extends Authenticatable implements JWTAuthenticatable
      * @var array<int, string>
      */
     protected $fillable = [
-        'name',
+        'first_name',
+        'last_name',
         'email',
+        'is_admin',
         'password',
+        'avatar',
+        'address',
+        'phone_number',
+        'email_verified_at',
+        'uuid',
+        'is_marketing',
+        'last_login_at',
     ];
 
     /**
