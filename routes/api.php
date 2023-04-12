@@ -33,3 +33,5 @@ Route::get('/category/{uuid}', [CategoryController::class, 'show'])
 // products
 Route::get('/products', [ProductController::class, 'index'])
     ->name('products.index');
+Route::get('/product/{uuid}', [ProductController::class, 'show'])
+    ->name('products.show');
