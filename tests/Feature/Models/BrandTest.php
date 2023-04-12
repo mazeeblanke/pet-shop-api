@@ -2,19 +2,18 @@
 
 namespace Tests\Feature\Models;
 
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 
 class BrandTest extends TestCase
 {
-    /**
-     * A basic feature test example.
-     */
-    public function test_example(): void
-    {
-        $response = $this->get('/');
-
-        $response->assertStatus(200);
-    }
+        /**
+     * Resource list fields
+     *
+     * @var array
+    */
+    protected $listFields = [
+        'title',
+        'uuid',
+        'slug'
+    ];
 }
