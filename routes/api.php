@@ -3,6 +3,7 @@
 use App\Http\Controllers\BrandController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -35,3 +36,9 @@ Route::get('/products', [ProductController::class, 'index'])
     ->name('products.index');
 Route::get('/product/{uuid}', [ProductController::class, 'show'])
     ->name('products.show');
+
+// users
+Route::post('/user/login', [UserController::class, 'login'])
+    ->name('user.login');
+Route::get('/user/logout', [UserController::class, 'logout'])
+    ->name('user.logout');

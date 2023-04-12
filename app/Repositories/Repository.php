@@ -8,6 +8,8 @@ use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 use App\Services\Filtering\Behaviors\HandleFilters;
+use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\DB;
 
 abstract class Repository
 {
@@ -57,6 +59,26 @@ abstract class Repository
     }
 
     /**
+     * Update fields
+    */
+    public function update(mixed $id, array $fields): Model|bool
+    {
+        return DB::transaction(function () use ($id, $fields) {
+            $object = $this->model->where($this->modelIdKey, $id)->first();
+
+            if (! $object) {
+                return false;
+            }
+
+            $object->fill(Arr::except($fields, $this->getReservedFields()));
+
+            $object->save();
+
+            return $object->fresh();
+        }, 3);
+    }
+
+    /**
      *
     */
     private function getFilter(): Filter
@@ -77,5 +99,13 @@ abstract class Repository
             HandleFilters::class,
             class_uses($this->model)
         );
+    }
+
+    /**
+     *
+     */
+    protected function getReservedFields(): array
+    {
+        return $this->reservedFields;
     }
 }
