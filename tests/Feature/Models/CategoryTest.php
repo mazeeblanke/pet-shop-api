@@ -8,13 +8,14 @@ use Tests\TestCase;
 
 class CategoryTest extends TestCase
 {
-    /**
-     * A basic feature test example.
-     */
-    public function test_example(): void
-    {
-        $response = $this->get('/');
-
-        $response->assertStatus(200);
-    }
+   /**
+     * Resource list fields
+     *
+     * @var array
+    */
+    protected $listFields = [
+        'title',
+        'uuid',
+        'slug'
+    ];
 }
