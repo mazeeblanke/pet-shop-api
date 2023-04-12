@@ -50,6 +50,9 @@ Route::get('/product/{uuid}', [ProductController::class, 'show'])
 Route::delete('/product/{uuid}', [ProductController::class, 'destroy'])
     ->middleware(['auth'])
     ->name('products.destroy');
+Route::post('/product/create', [ProductController::class, 'store'])
+    ->middleware(['auth'])
+    ->name('products.store');
 
 // users
 Route::post('/user/login', [UserController::class, 'login'])
