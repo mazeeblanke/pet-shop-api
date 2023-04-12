@@ -9,4 +9,10 @@ use Illuminate\Database\Eloquent\Model;
 class Category extends Model
 {
     use HasFactory, HandleFilters;
+
+    protected $fillable = [
+        'title',
+        'uuid',
+        'slug',
+    ];
 }
