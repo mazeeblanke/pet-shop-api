@@ -143,13 +143,13 @@ class ProductController extends Controller
         //
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Product $product)
-    {
-        //
-    }
+    // /**
+    //  * Display the specified resource.
+    //  */
+    // public function show(Product $product)
+    // {
+    //     //
+    // }
 
     /**
      * Update the specified resource in storage.
