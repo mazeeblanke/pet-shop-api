@@ -89,12 +89,12 @@ class CategoryController extends Controller
         return parent::index($request);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(StoreCategoryRequest $request)
-    {
-    }
+    // /**
+    //  * Store a newly created resource in storage.
+    //  */
+    // public function store(StoreCategoryRequest $request)
+    // {
+    // }
 
     /**
      * Display the specified resource.

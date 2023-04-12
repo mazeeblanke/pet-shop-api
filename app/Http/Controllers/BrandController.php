@@ -91,9 +91,54 @@ class BrandController extends Controller
 
     /**
      * Store a newly created resource in storage.
+     * 
+     * @OA\Post(
+     *     path="/api/v1/brand/create",
+     *     tags={"Brands"},
+     *     summary="Create a new brand",
+     *     description="Brands API endpoint",
+     *     operationId="brand.store",
+     *     security={{ "bearerAuth": {} }},
+     *     @OA\RequestBody(
+     *         description="Brand object",
+     *         required=true,
+     *         @OA\MediaType(
+     *             mediaType="application/x-www-form-urlencoded",
+     *             @OA\Schema(
+     *                 required={"title"},
+     *                 @OA\Property(
+     *                     property="title",
+     *                     type="string",
+     *                     description="Brand title",
+     *                 ),
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="ok",
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthorized"
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Page not found"
+     *     ),
+     *     @OA\Response(
+     *         response=422,
+     *         description="Unprocessable Entity"
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Internal server error"
+     *     ),
+     * )
      */
-    public function store(StoreBrandRequest $request)
+    public function store()
     {
+        return parent::store();
     }
 
     /**

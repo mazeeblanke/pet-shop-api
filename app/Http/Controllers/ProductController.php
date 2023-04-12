@@ -135,12 +135,12 @@ class ProductController extends Controller
         return parent::index($request);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(StoreProductRequest $request)
-    {
-    }
+    // /**
+    //  * Store a newly created resource in storage.
+    //  */
+    // public function store(StoreProductRequest $request)
+    // {
+    // }
 
     /**
      * Display the specified resource.

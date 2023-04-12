@@ -26,6 +26,9 @@ Route::get('/brand/{uuid}', [BrandController::class, 'show'])
 Route::delete('/brand/{uuid}', [BrandController::class, 'destroy'])
     ->middleware(['auth'])
     ->name('brands.destroy');
+Route::post('/brand/create', [BrandController::class, 'store'])
+    ->middleware(['auth'])
+    ->name('brands.store');
 
 // categories
 Route::get('/categories', [CategoryController::class, 'index'])
