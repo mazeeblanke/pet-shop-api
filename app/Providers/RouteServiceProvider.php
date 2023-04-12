@@ -34,6 +34,12 @@ class RouteServiceProvider extends ServiceProvider
         });
     }
 
+    public function register()
+    {
+        parent::register();
+        $this->configureJWTAuth();
+    }
+
     /**
      * Configure the rate limiters for the application.
      */
@@ -42,5 +48,15 @@ class RouteServiceProvider extends ServiceProvider
         RateLimiter::for('api', function (Request $request) {
             return Limit::perMinute(60)->by($request->user()?->id ?: $request->ip());
         });
+    }
+
+    protected function configureJWTAuth()
+    {
+        if (! config('jwt.issuer')) {
+            config()->set('jwt.issuer', url('/'));
+        }
+        if (! config('jwt.permitted_for')) {
+            config()->set('jwt.permitted_for', url('/'));
+        }
     }
 }
