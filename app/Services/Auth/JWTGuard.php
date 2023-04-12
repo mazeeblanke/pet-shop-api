@@ -2,6 +2,7 @@
 
 namespace App\Services\Auth;
 
+use App\Services\Auth\Contracts\EventFactory;
 use App\Services\Auth\Contracts\JWTAuthenticatable;
 use App\Services\Auth\Contracts\StatefulGuard;
 use App\Services\Auth\Contracts\TokenManager;
@@ -12,6 +13,7 @@ use App\Services\Auth\Exceptions\NotPermitted;
 use App\Services\Auth\Exceptions\TokenExpired;
 use Exception;
 use Illuminate\Auth\GuardHelpers;
+use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Http\Request;
 use Lcobucci\JWT\Builder;
@@ -46,6 +48,10 @@ class JWTGuard implements StatefulGuard
 
     protected Validator $validator;
 
+    protected EventFactory $eventFactory;
+
+    protected Dispatcher $eventDispatcher;
+
     public function __construct(string $name, Application $app, array $config)
     {
         $this->app = $app;
@@ -56,6 +62,8 @@ class JWTGuard implements StatefulGuard
         $this->parser = $this->configuration->parser();
         $this->validator = $this->configuration->validator();
         $this->tokenManager = $this->app->get(TokenManager::class);
+        $this->eventFactory = $this->app->get(EventFactory::class);
+        $this->eventDispatcher = $this->app->get(Dispatcher::class);
     }
 
     public function user()
@@ -74,9 +82,21 @@ class JWTGuard implements StatefulGuard
 
     public function attempt(array $credentials = [], $remember = false): bool
     {
+        $this->dispatchEvent(
+            $this
+                ->eventFactory
+                ->createAttemptingEvent($this->name, $credentials, $remember)
+        );
+
         $user = $this->provider->retrieveByCredentials($credentials);
 
         if (! ($user && $this->validateCredentials($credentials, $user))) {
+            $this->dispatchEvent(
+                $this
+                    ->eventFactory
+                    ->createFailedEvent($this->name, $user, $credentials)
+            );
+
             return false;
         }
 
@@ -92,12 +112,24 @@ class JWTGuard implements StatefulGuard
         $accessToken = $this->issueAccessToken($user);
 
         $this->setAccessToken($accessToken);
+
+        $this->dispatchEvent(
+            $this
+                ->eventFactory
+                ->createLoginEvent($this->name, $user, $remember)
+        );
     }
 
     public function logout(): void
     {
         $this->user = null;
         $this->accessToken = null;
+
+        $this->dispatchEvent(
+            $this
+                ->eventFactory
+                ->createLogoutEvent($this->name, $this->user)
+        );
     }
 
     public function issueAccessToken(JWTAuthenticatable $user): Token
@@ -240,5 +272,14 @@ class JWTGuard implements StatefulGuard
         $uuid = $accessToken->claims()->get('sub');
 
         return $this->provider->retrieveById($uuid);
+    }
+
+    private function dispatchEvent($event): JWTGuard
+    {
+        if ($this->eventDispatcher) {
+            $this->eventDispatcher->dispatch($event);
+        }
+
+        return $this;
     }
 }
