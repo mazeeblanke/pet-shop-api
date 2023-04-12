@@ -37,6 +37,11 @@ class JWTGuard implements StatefulGuard
         $this->builder = $this->configuration->builder();
     }
 
+    public function validate(array $credentials = []): bool
+    {
+        return $this->validateCredentials($credentials, $this->user);
+    }
+
     public function attempt(array $credentials = [], $remember = false): bool
     {
         $user = $this->provider->retrieveByCredentials($credentials);
@@ -54,7 +59,9 @@ class JWTGuard implements StatefulGuard
     {
         $this->setUser($user);
 
-        $this->issueAccessToken($user);
+        $accessToken = $this->issueAccessToken($user);
+
+        $this->setAccessToken($accessToken);
     }
 
     public function issueAccessToken(JWTAuthenticatable $user): Token
@@ -83,8 +90,6 @@ class JWTGuard implements StatefulGuard
             $this->app->get(Key::class)
         );
 
-        $this->setAccessToken($accessToken);
-
         return $accessToken;
     }
 
@@ -108,7 +113,7 @@ class JWTGuard implements StatefulGuard
         return Optional($this->accessToken)->toString();
     }
 
-    public function validateCredentials(
+    private function validateCredentials(
         array $credentials,
         JWTAuthenticatable $user
     ): bool {
