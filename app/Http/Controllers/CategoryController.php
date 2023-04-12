@@ -89,12 +89,57 @@ class CategoryController extends Controller
         return parent::index($request);
     }
 
-    // /**
-    //  * Store a newly created resource in storage.
-    //  */
-    // public function store(StoreCategoryRequest $request)
-    // {
-    // }
+    /**
+     * Store a newly created resource in storage.
+     * 
+     * @OA\Post(
+     *     path="/api/v1/category/create",
+     *     tags={"Categories"},
+     *     summary="Create a new category",
+     *     description="Categories API endpoint",
+     *     operationId="category.store",
+     *     security={{ "bearerAuth": {} }},
+     *     @OA\RequestBody(
+     *         description="category object",
+     *         required=true,
+     *         @OA\MediaType(
+     *             mediaType="application/x-www-form-urlencoded",
+     *             @OA\Schema(
+     *                 required={"title"},
+     *                 @OA\Property(
+     *                     property="title",
+     *                     type="string",
+     *                     description="Category title",
+     *                 ),
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="ok",
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthorized"
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Page not found"
+     *     ),
+     *     @OA\Response(
+     *         response=422,
+     *         description="Unprocessable Entity"
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Internal server error"
+     *     ),
+     * )
+     */
+    public function store()
+    {
+        return parent::store();
+    }
 
     /**
      * Display the specified resource.

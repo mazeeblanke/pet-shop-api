@@ -38,6 +38,9 @@ Route::get('/category/{uuid}', [CategoryController::class, 'show'])
 Route::delete('/category/{uuid}', [CategoryController::class, 'destroy'])
     ->middleware(['auth'])
     ->name('categories.destroy');
+Route::post('/category/create', [CategoryController::class, 'store'])
+    ->middleware(['auth'])
+    ->name('categories.store');
 
 // products
 Route::get('/products', [ProductController::class, 'index'])
