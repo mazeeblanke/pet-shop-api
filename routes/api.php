@@ -32,6 +32,9 @@ Route::get('/categories', [CategoryController::class, 'index'])
     ->name('categories.index');
 Route::get('/category/{uuid}', [CategoryController::class, 'show'])
     ->name('categories.show');
+Route::delete('/category/{uuid}', [CategoryController::class, 'destroy'])
+    ->middleware(['auth'])
+    ->name('categories.destroy');
 
 // products
 Route::get('/products', [ProductController::class, 'index'])

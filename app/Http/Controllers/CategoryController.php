@@ -149,10 +149,49 @@ class CategoryController extends Controller
     {
     }
 
-    // /**
-    //  * Remove the specified resource from storage.
-    //  */
-    // public function destroy(Category $category)
-    // {
-    // }
+    /**
+     * Remove the specified resource from storage.
+     * @OA\Delete(
+     *     path="/api/v1/category/{uuid}",
+     *     tags={"Categories"},
+     *     summary="Delete an existing category",
+     *     description="Categories API endpoint",
+     *     operationId="category.delete",
+     *     security={{ "bearerAuth": {} }},
+     *     @OA\Parameter(
+     *         name="uuid",
+     *         in="path",
+     *         description="",
+     *         required=true,
+     *         @OA\Schema(
+     *             default="",
+     *             type="string",
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="ok",
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthorized"
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Page not found"
+     *     ),
+     *     @OA\Response(
+     *         response=422,
+     *         description="Unprocessable Entity"
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Internal server error"
+     *     ),
+     * )
+     */
+    public function destroy($id)
+    {
+        return parent::destroy($id);
+    }
 }
