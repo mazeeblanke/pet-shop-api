@@ -60,7 +60,13 @@ class UserController extends AuthController
      */
     public function login(AuthenticateRequest $request)
     {
-        return parent::login($request);
+        $response = parent::login($request);
+
+        if (!request()->user()->is_admin) {
+            return $this->respondWithError('Failed to authenticate user', Response::HTTP_UNAUTHORIZED);
+        }
+
+        return $response;
     }
 
     /**

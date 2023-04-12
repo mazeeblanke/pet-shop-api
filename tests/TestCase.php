@@ -81,6 +81,13 @@ abstract class TestCase extends BaseTestCase
         auth()->login($this->user);
         $this->token = JWT::getAccessToken();
         auth()->logout();
+
+        // admin
+        User::factory()->create([
+            'email' => config('app.admin_email'),
+            'password' => bcrypt(config('app.admin_password')),
+            'is_admin' => 1
+        ]);
     }
 
     /**

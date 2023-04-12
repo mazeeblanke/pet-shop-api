@@ -58,6 +58,10 @@ return [
 
     'asset_url' => env('ASSET_URL'),
 
+    'admin_email' => env('ADMIN_EMAIL', 'admin@buckhill.co.uk'),
+
+    'admin_password' => env('ADMIN_PASSWORD', 'admin'),
+
     /*
     |--------------------------------------------------------------------------
     | Application Timezone

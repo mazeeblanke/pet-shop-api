@@ -69,13 +69,13 @@ class UserTest extends TestCase
         $this->markTestSkipped('Test skipped from base test class');
     }
 
-    public function test_cannot_login_without_credentials()
+    public function test_cannot_login_without_credentials(): void
     {
         $response = $this->postJson($this->getBaseUrl() . 'login', []);
         $response->assertStatus(Response::HTTP_UNPROCESSABLE_ENTITY);
     }
 
-    public function test_can_login_a_user_with_credentials():void
+    public function test_can_login_a_user_with_credentials(): void
     {
         $response = $this->postJson($this->getBaseUrl() . 'login', [
             'email' => $this->user->email,
@@ -93,7 +93,43 @@ class UserTest extends TestCase
         ]);
     }
 
-    public function test_can_logout():void
+    public function test_can_login_a_admin_with_credentials(): void
+    {
+        $response = $this->postJson($this->getBaseUrl('admin') . 'login', [
+            'email' => config('app.admin_email'),
+            'password' => config('app.admin_password')
+        ]);
+        $response->assertStatus(Response::HTTP_OK);
+        $response->assertJsonStructure([
+            'success',
+            'data' => [
+                'token'
+            ],
+            'error',
+            'errors',
+            'extra'
+        ]);
+    }
+
+    public function test_cannot_login_a_user_with_credentials_to_admin_route(): void
+    {
+        $response = $this->postJson($this->getBaseUrl('admin') . 'login', [
+            'email' => $this->user->email,
+            'password' => $this->validInput['password']
+        ]);
+        $response->assertStatus(Response::HTTP_UNAUTHORIZED);
+    }
+
+    public function test_cannot_login_a_admin_with_credentials_to_user_route(): void
+    {
+        $response = $this->postJson($this->getBaseUrl() . 'login', [
+            'email' => config('app.admin_email'),
+            'password' => config('app.admin_password')
+        ]);
+        $response->assertStatus(Response::HTTP_UNAUTHORIZED);
+    }
+
+    public function test_can_logout(): void
     {
         auth()->login($this->user);
         $response = $this->getJson($this->getBaseUrl() . 'logout');
@@ -114,7 +150,7 @@ class UserTest extends TestCase
      */
     protected function getBaseUrl($resource = null): string
     {
-        return '/api/v1/user/';
+        return '/api/v1/' . ($resource ?? $this->resource) . '/';
     }
 
     protected function getHeaders()
