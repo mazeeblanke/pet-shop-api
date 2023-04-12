@@ -17,12 +17,21 @@ class UserFactory extends Factory
      */
     public function definition(): array
     {
+        $password = bcrypt('userpassword');
+
         return [
-            'name' => fake()->name(),
+            'uuid' => fake()->uuid(),
+            'first_name' => fake()->firstName,
+            'last_name' => fake()->lastName,
+            'is_admin' => 0,
             'email' => fake()->unique()->safeEmail(),
             'email_verified_at' => now(),
-            'password' => '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', // password
-            'remember_token' => Str::random(10),
+            'password' => $password, // userpassword
+            // 'remember_token' => Str::random(10),
+            'avatar' => fake()->uuid(),
+            'address' => fake()->streetAddress,
+            'phone_number' => fake()->phoneNumber(),
+            'is_marketing' => fake()->randomElement([0, 1])
         ];
     }
 
