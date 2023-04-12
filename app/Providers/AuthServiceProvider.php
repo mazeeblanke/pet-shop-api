@@ -3,7 +3,11 @@
 namespace App\Providers;
 
 // use Illuminate\Support\Facades\Gate;
+
+use App\Services\Auth\JWTGuard;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
+use Lcobucci\JWT\Configuration;
+use Lcobucci\JWT\Signer\Key\InMemory;
 
 class AuthServiceProvider extends ServiceProvider
 {
@@ -21,5 +25,84 @@ class AuthServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        $this->bootJWTAuth();
+    }
+
+    public function register(): self
+    {
+        $this->registerJWTAuth();
+
+        return $this;
+    }
+
+    private function bootJWTAuth(): void
+    {
+        $auth = $this->app->get('auth');
+        $auth->extend(
+            'jwt',
+            fn ($app, $name, array $config) => new JWTGuard(
+                $name,
+                $app,
+                $config
+            )
+        );
+    }
+
+    private function registerJWTAuth(): void
+    {
+        $this
+            ->registerJWTGuard()
+            ->registerSigner()
+            ->registerSecretKey()
+            ->registerConfiguration();
+    }
+
+    private function registerJWTGuard(): self
+    {
+        $this->app->singleton(Guard::class, fn () => $this->app->get('auth')->guard());
+
+        return $this;
+    }
+
+    private function registerSigner(): self
+    {
+        $this->app->singleton(Signer::class, function () {
+            $signerClass = config('jwt.signer');
+
+            return new $signerClass();
+        });
+
+        return $this;
+    }
+
+    private function registerSecretKey(): self
+    {
+        $this->app->singleton(Key::class, fn () => InMemory::plainText('my-key-as-plaintextmy-key-as-plaintext')); // use config to set the key
+
+        return $this;
+    }
+
+    private function registerConfiguration(): self
+    {
+        if (config('jwt.isAsymmetric')) {
+            $this->app->singleton(
+                Configuration::class,
+                fn () => Configuration::forAsymmetricSigner(
+                    $this->app->get(Signer::class),
+                    InMemory::file(base_path(config('jwt.server-key'))),
+                    $this->app->get(Key::class)
+                )
+            );
+        } else {
+            $this->app->singleton(
+                Configuration::class,
+                fn () => Configuration::forSymmetricSigner(
+                    $this->app->get(Signer::class),
+                    $this->app->get(Key::class)
+                )
+            );
+        }
+
+        return $this;
     }
 }
