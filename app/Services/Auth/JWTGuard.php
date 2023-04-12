@@ -4,13 +4,25 @@ namespace App\Services\Auth;
 
 use App\Services\Auth\Contracts\JWTAuthenticatable;
 use App\Services\Auth\Contracts\StatefulGuard;
+use App\Services\Auth\Contracts\TokenManager;
+use App\Services\Auth\Exceptions\BeforeValid;
+use App\Services\Auth\Exceptions\InvalidSignature;
+use App\Services\Auth\Exceptions\InvalidToken;
+use App\Services\Auth\Exceptions\NotPermitted;
+use App\Services\Auth\Exceptions\TokenExpired;
+use Exception;
 use Illuminate\Auth\GuardHelpers;
 use Illuminate\Contracts\Foundation\Application;
+use Illuminate\Http\Request;
 use Lcobucci\JWT\Builder;
 use Lcobucci\JWT\Configuration;
+use Lcobucci\JWT\Parser;
 use Lcobucci\JWT\Signer;
 use Lcobucci\JWT\Signer\Key;
 use Lcobucci\JWT\Token;
+use Lcobucci\JWT\Validation\Constraint\PermittedFor;
+use Lcobucci\JWT\Validation\Constraint\SignedWith;
+use Lcobucci\JWT\Validator;
 
 class JWTGuard implements StatefulGuard
 {
@@ -26,7 +38,13 @@ class JWTGuard implements StatefulGuard
 
     protected Builder $builder;
 
+    protected TokenManager $tokenManager;
+
     protected Configuration $configuration;
+
+    protected Parser $parser;
+
+    protected Validator $validator;
 
     public function __construct(string $name, Application $app, array $config)
     {
@@ -35,6 +53,18 @@ class JWTGuard implements StatefulGuard
         $this->config = $config;
         $this->configuration = $this->app->get(Configuration::class);
         $this->builder = $this->configuration->builder();
+        $this->parser = $this->configuration->parser();
+        $this->validator = $this->configuration->validator();
+        $this->tokenManager = $this->app->get(TokenManager::class);
+    }
+
+    public function user()
+    {
+        if ($this->user) {
+            return $this->user;
+        }
+
+        return $this->authenticateWithAccessToken(request());
     }
 
     public function validate(array $credentials = []): bool
@@ -126,5 +156,89 @@ class JWTGuard implements StatefulGuard
         return $this
             ->provider
             ->validateCredentials($user, $credentials);
+    }
+
+    /**
+     *
+     * @param   string  $accessToken
+     *
+     * @throws InvalidToken
+     *
+     * @throws InvalidSignature
+     *
+     * @throws BeforeValid
+     *
+     * @throws TokenExpired
+     *
+     * @return  Token
+     */
+    private function getValidToken($accessToken): Token|null
+    {
+        if (! $accessToken) {
+            return null;
+        }
+
+        try {
+            $token = $this->parser->parse($accessToken);
+        } catch (Exception $e) {
+            throw new InvalidToken();
+        }
+
+        if (! $this->validator->validate($token, new SignedWith(
+            $this->app->get(Signer::class),
+            $this->app->get(Key::class)
+        ))) {
+            throw new InvalidSignature();
+        }
+
+        if (! $this->validator->validate($token, new PermittedFor(
+            config('jwt.permitted_for')
+        ))) {
+            throw new NotPermitted();
+        }
+
+        if ($token->isExpired(now())) {
+            throw new TokenExpired();
+        }
+
+        if (! $token->hasBeenIssuedBefore(now())) {
+            throw new BeforeValid();
+        }
+
+        return $token;
+    }
+
+    private function authenticateWithAccessToken(
+        Request $request
+    ): JWTAuthenticatable|null {
+        $accessToken = $this->getAccessTokenFromRequest($request);
+
+        if (! $accessToken) {
+            return null;
+        }
+
+        $user = $this->getUserByJWT($accessToken);
+
+        if (! $user) {
+            return null;
+        }
+
+        $this->setAccessToken($accessToken)->setUser($user);
+
+        return $user;
+    }
+
+    private function getAccessTokenFromRequest(Request $request): Token|null
+    {
+        $accessToken = $this->tokenManager->getRequestToken($request);
+
+        return $this->getValidToken($accessToken);
+    }
+
+    private function getUserByJWT($accessToken): JWTAuthenticatable
+    {
+        $uuid = $accessToken->claims()->get('sub');
+
+        return $this->provider->retrieveById($uuid);
     }
 }
