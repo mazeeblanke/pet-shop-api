@@ -26,6 +26,8 @@ Route::get('/brand/{uuid}', [BrandController::class, 'show'])
 // categories
 Route::get('/categories', [CategoryController::class, 'index'])
     ->name('categories.index');
+Route::get('/category/{uuid}', [CategoryController::class, 'show'])
+    ->name('categories.show');
 
 
 // products
