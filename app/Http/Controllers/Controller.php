@@ -59,7 +59,7 @@ class Controller extends BaseController
 
     /**
      * Display resource listing.
-    */
+     */
     public function index(Request $request)
     {
         $filters = [
@@ -74,7 +74,7 @@ class Controller extends BaseController
 
     /**
      * Display the specified resource.
-    */
+     */
     public function show($uuid)
     {
         $model = $this->repository->getById($uuid, $this->with);

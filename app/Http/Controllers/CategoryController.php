@@ -94,7 +94,6 @@ class CategoryController extends Controller
      */
     public function store(StoreCategoryRequest $request)
     {
-        //
     }
 
     /**
@@ -148,7 +147,6 @@ class CategoryController extends Controller
      */
     public function update(UpdateCategoryRequest $request, Category $category)
     {
-        //
     }
 
     /**
@@ -156,6 +154,5 @@ class CategoryController extends Controller
      */
     public function destroy(Category $category)
     {
-        //
     }
 }

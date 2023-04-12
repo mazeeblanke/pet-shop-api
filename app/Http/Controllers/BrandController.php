@@ -98,6 +98,7 @@ class BrandController extends Controller
 
     /**
      * Display the specified resource.
+     *
      * @OA\Get(
      *     path="/api/v1/brand/{uuid}",
      *     tags={"Brands"},

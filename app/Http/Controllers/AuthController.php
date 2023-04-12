@@ -22,7 +22,7 @@ class AuthController extends Controller
         }
 
         $this->repository->update($user->uuid, [
-            'last_login_at' => date('Y-m-d H:i:s')
+            'last_login_at' => date('Y-m-d H:i:s'),
         ]);
 
         return $this->respondWithSuccess(new $this->resource([

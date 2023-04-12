@@ -129,7 +129,7 @@ class ProductController extends Controller
      *         description="Internal server error"
      *     ),
      * )
-    */
+     */
     public function index(Request $request)
     {
         return parent::index($request);
@@ -140,7 +140,6 @@ class ProductController extends Controller
      */
     public function store(StoreProductRequest $request)
     {
-        //
     }
 
     /**
@@ -194,7 +193,6 @@ class ProductController extends Controller
      */
     public function update(UpdateProductRequest $request, Product $product)
     {
-        //
     }
 
     /**
@@ -202,6 +200,5 @@ class ProductController extends Controller
      */
     public function destroy(Product $product)
     {
-        //
     }
 }

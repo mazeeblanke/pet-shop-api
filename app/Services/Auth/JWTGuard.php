@@ -65,7 +65,7 @@ class JWTGuard implements StatefulGuard
         $this->eventFactory = $this->app->get(EventFactory::class);
         $this->eventDispatcher = $this->app->get(Dispatcher::class);
         $this->provider = $this->app->get('auth')
-        ->createUserProvider($config['provider']);
+            ->createUserProvider($config['provider']);
     }
 
     public function user()
@@ -155,17 +155,14 @@ class JWTGuard implements StatefulGuard
             $this->builder = $this->builder->withClaim($name, $value);
         }
 
-        $accessToken = $this->builder->getToken(
+        return $this->builder->getToken(
             $this->app->get(Signer::class),
             $this->app->get(Key::class)
         );
-
-        return $accessToken;
     }
 
     /**
      * Set access token object
-     *
      */
     public function setAccessToken(Token $token): JWTGuard
     {
@@ -176,7 +173,6 @@ class JWTGuard implements StatefulGuard
 
     /**
      * Get a string representation of the access token
-     *
      */
     public function getAccessToken(): string|null
     {
@@ -193,7 +189,6 @@ class JWTGuard implements StatefulGuard
     }
 
     /**
-     *
      * @param   string  $accessToken
      *
      * @throws InvalidToken
@@ -206,8 +201,9 @@ class JWTGuard implements StatefulGuard
      *
      * @return  Token
      */
-    private function getValidToken($accessToken): Token|null
-    {
+    private function getValidToken(
+        $accessToken
+    ): Token|null {
         if (! $accessToken) {
             return null;
         }

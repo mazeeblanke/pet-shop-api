@@ -23,13 +23,11 @@ Route::get('/brands', [BrandController::class, 'index'])
 Route::get('/brand/{uuid}', [BrandController::class, 'show'])
     ->name('brands.show');
 
-
 // categories
 Route::get('/categories', [CategoryController::class, 'index'])
     ->name('categories.index');
 Route::get('/category/{uuid}', [CategoryController::class, 'show'])
     ->name('categories.show');
-
 
 // products
 Route::get('/products', [ProductController::class, 'index'])

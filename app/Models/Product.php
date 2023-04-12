@@ -28,7 +28,6 @@ class Product extends Model
 
     /**
      * Brand Relationship
-     *
      */
     public function brand(): HasOne
     {
@@ -37,7 +36,6 @@ class Product extends Model
 
     /**
      * Category Relationship
-     *
      */
     public function category(): HasOne
     {

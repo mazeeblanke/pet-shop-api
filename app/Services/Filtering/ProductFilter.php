@@ -9,7 +9,6 @@ class ProductFilter extends BaseFilter
 {
     /**
      * Specific filters.
-     *
      */
     protected array $filters = [
         'title',
@@ -20,7 +19,6 @@ class ProductFilter extends BaseFilter
 
     /**
      * Filter title.
-     *
      */
     protected function title(): Builder
     {
@@ -33,7 +31,6 @@ class ProductFilter extends BaseFilter
 
     /**
      * Filter price.
-     *
      */
     protected function price($value): Builder
     {
@@ -42,8 +39,7 @@ class ProductFilter extends BaseFilter
 
     /**
      * Filter category.
-     *
-    */
+     */
     protected function category($value): Builder
     {
         return $this
@@ -56,8 +52,7 @@ class ProductFilter extends BaseFilter
 
     /**
      * Filter brand.
-     *
-    */
+     */
     protected function brand($value): Builder
     {
         $joinOnColumn = DB::raw(

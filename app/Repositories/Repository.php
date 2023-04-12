@@ -2,13 +2,13 @@
 
 namespace App\Repositories;
 
+use App\Services\Filtering\Behaviors\HandleFilters;
 use App\Services\Filtering\Contracts\Filter;
 use Exception;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Collection;
-use App\Services\Filtering\Behaviors\HandleFilters;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
 abstract class Repository
@@ -29,7 +29,6 @@ abstract class Repository
 
     /**
      * Fetch all
-     *
      */
     public function get(
         array $filters = [],
@@ -60,7 +59,7 @@ abstract class Repository
 
     /**
      * Update fields
-    */
+     */
     public function update(mixed $id, array $fields): Model|bool
     {
         return DB::transaction(function () use ($id, $fields) {
@@ -80,7 +79,15 @@ abstract class Repository
 
     /**
      *
-    */
+     */
+    protected function getReservedFields(): array
+    {
+        return $this->reservedFields;
+    }
+
+    /**
+     *
+     */
     private function getFilter(): Filter
     {
         $namepace = trim(app()->getNamespace(), '\\') . "\Services\Filtering\\";
@@ -99,13 +106,5 @@ abstract class Repository
             HandleFilters::class,
             class_uses($this->model)
         );
-    }
-
-    /**
-     *
-     */
-    protected function getReservedFields(): array
-    {
-        return $this->reservedFields;
     }
 }
