@@ -14,11 +14,13 @@ class UserSeeder extends Seeder
     public function run(): void
     {
         // admin
-        User::factory()->create([
-            'email' => config('app.admin_email'),
-            'password' => bcrypt(config('app.admin_password')),
-            'is_admin' => 1
-        ]);
+        if (!User::whereEmail(config('app.admin_email'))->exists()) {
+            User::factory()->create([
+                'email' => config('app.admin_email'),
+                'password' => bcrypt(config('app.admin_password')),
+                'is_admin' => 1
+            ]);
+        }
 
         User::factory()->count(50)->create();
     }
