@@ -265,7 +265,7 @@ class JWTGuard implements StatefulGuard
         return $this->getValidToken($accessToken);
     }
 
-    private function getUserByJWT($accessToken): JWTAuthenticatable
+    private function getUserByJWT($accessToken): JWTAuthenticatable|null
     {
         $uuid = $accessToken->claims()->get('sub');
 
