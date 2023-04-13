@@ -76,7 +76,7 @@ abstract class BaseFilter implements Filter
      */
     protected function orderByColumn(): Builder
     {
-        $direction = $this->request->get('desc', false) === true
+        $direction = (bool)$this->request->get('desc', false) === true
             ? 'desc'
             : 'asc';
         $sortBy = $this->request->get('sortBy', null);
