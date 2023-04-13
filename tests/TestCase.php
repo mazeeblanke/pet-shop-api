@@ -62,6 +62,12 @@ abstract class TestCase extends BaseTestCase
     protected string $token;
 
     /**
+     * Admin token string
+     *
+     */
+    protected string $adminToken;
+
+    /**
      * Valid request input
      *
      */
@@ -105,11 +111,14 @@ abstract class TestCase extends BaseTestCase
         auth()->logout();
 
         // admin
-        User::factory()->create([
+        $admin = User::factory()->create([
             'email' => config('app.admin_email'),
             'password' => bcrypt(config('app.admin_password')),
             'is_admin' => 1
         ]);
+        auth()->login($admin);
+        $this->adminToken = JWT::getAccessToken();
+        auth()->logout();
     }
 
     /**
@@ -122,10 +131,10 @@ abstract class TestCase extends BaseTestCase
         return Str::singular($resource);
     }
 
-    protected function getHeaders()
+    protected function getHeaders(bool $forAdmin = false): array
     {
         return [
-            'Authorization' => 'Bearer ' . $this->token
+            'Authorization' => 'Bearer ' . ($forAdmin ? $this->adminToken  : $this->token)
         ];
     }
 
@@ -210,7 +219,7 @@ abstract class TestCase extends BaseTestCase
         $url = $this->getBaseUrl(Str::plural($this->resource));
 
         // Test pure listing
-        $this->test_listing($page, $limit, $url, $resources, $itemsCount);
+        $this->test_listing($page, $limit, $url);
 
         // Test basic Filtering
         $this->test_basic_filtering($page, $limit, $url, $resources, $itemsCount);
@@ -219,7 +228,7 @@ abstract class TestCase extends BaseTestCase
         $this->test_custom_filtering($page, $limit, $url, $resources);
 
         // Test pagination
-        $this->test_pagination($page, $limit, $url, $resources, $itemsCount);
+        $this->test_pagination($page, $limit, $url, $resources);
     }
 
     /**
@@ -273,58 +282,65 @@ abstract class TestCase extends BaseTestCase
         $this->test_can_create_with_valid_input_and_auth();
     }
 
-    private function test_custom_filtering($page, $limit, $url, $resources)
+    protected function test_custom_filtering($page, $limit, $url, $resources, $headers = [])
     {
+
         if ($this->filters) {
             forEach($this->filters as $filterKey => $filter) {
                 if (is_array($filter)) {
                     forEach($filter as $filterVal) {
-                        $response = $this->call('GET', $url, [
+                        $params = http_build_query([
                             'page' => $page,
                             'limit' => $limit,
                             $filterKey => $resources[0]->{$filterKey}[$filterVal]
                         ]);
+                        $response = $this->getJson($url . "?" . $params, $headers);
 
                         $response->assertJsonCount(1, 'data');
                     }
                 } else {
-                    $response = $this->call('GET', $url, [
+                    $params = http_build_query([
                         'page' => $page,
                         'limit' => $limit,
                         $filter => $resources[0]->{$filter}
                     ]);
+                    $response = $this->getJson($url . "?" . $params, $headers);
                     $response->assertJsonCount(1, 'data');
                 }
             }
         }
     }
 
-    private function test_basic_filtering($page, $limit, $url, $resources, $itemsCount)
+    protected function test_basic_filtering($page, $limit, $url, $resources, $itemsCount, $headers = [])
     {
-        $response = $this->call('GET', $url, [
+        $params = http_build_query([
             'page' => $page,
             'sortBy' => 'id',
             'desc' => true,
             'limit' => $limit
         ]);
+        $response = $this->getJson($url . "?" . $params, $headers);
         $response->assertJsonFragment([
-            'title' => $resources[$itemsCount - 2]->title
+            'uuid' => $resources[$itemsCount - 2]->uuid
         ]);
-        $response = $this->call('GET', $url, [
+
+        $params = http_build_query([
             'page' => $page,
             'sortBy' => 'wrongcolumn',
             'desc' => true,
             'limit' => $limit
         ]);
+        $response = $this->getJson($url . "?" . $params, $headers);
         $response->assertJsonCount($limit, 'data');
     }
 
-    private function test_listing($page, $limit, $url)
+    protected function test_listing($page, $limit, $url, $headers = [])
     {
-        $response = $this->call('GET', $url, [
+        $params = http_build_query([
             'page' => $page,
             'limit' => $limit
         ]);
+        $response = $this->getJson($url . "?" . $params, $headers);
         $response->assertSuccessful();
         $response->assertStatus(Response::HTTP_OK);
         $response->assertJsonCount(10, 'data');
@@ -353,20 +369,21 @@ abstract class TestCase extends BaseTestCase
         ]);
     }
 
-    private function test_pagination($page, $limit, $url, $resources)
+    protected function test_pagination($page, $limit, $url, $resources, $headers = [])
     {
         $page = 2;
-        $response = $this->call('GET', $url, [
+        $params = http_build_query([
             'page' => $page,
             'limit' => $limit
         ]);
+        $response = $this->getJson($url . "?" . $params, $headers);
 
         $response->assertJsonFragment([
-            'title' => $resources[$page + $limit]->title
+            'uuid' => $resources[$page + $limit]->uuid
         ]);
     }
 
-    private function test_cannot_delete_with_auth($resource)
+    protected function test_cannot_delete_with_auth($resource)
     {
         $response = $this->deleteJson($this->getBaseUrl() . $resource->{$this->modelIdKey});
         $response->assertStatus(Response::HTTP_UNAUTHORIZED);
@@ -379,7 +396,7 @@ abstract class TestCase extends BaseTestCase
         ]);
     }
 
-    private function test_can_delete_with_auth($resource)
+    protected function test_can_delete_with_auth($resource)
     {
         $response = $this->deleteJson($this->getBaseUrl() . $resource->{$this->modelIdKey}, [], $this->getHeaders());
         $response->assertStatus(Response::HTTP_OK);
@@ -393,7 +410,7 @@ abstract class TestCase extends BaseTestCase
             ]);
     }
 
-    private function test_cannot_create_without_auth_for_non_user_resource()
+    protected function test_cannot_create_without_auth_for_non_user_resource()
     {
         if ($this->resource != 'user') {
             $response = $this->postJson($this->getBaseUrl() . 'create', $this->invalidInput);
@@ -407,7 +424,7 @@ abstract class TestCase extends BaseTestCase
         }
     }
 
-    private function test_cannot_create_with_invalid_input()
+    protected function test_cannot_create_with_invalid_input()
     {
         $response = $this->postJson(
             $this->getBaseUrl() . 'create',
@@ -418,7 +435,7 @@ abstract class TestCase extends BaseTestCase
         $response->assertJsonFragment($this->errorMsgs);
     }
 
-    private function test_can_create_with_valid_input_and_auth()
+    protected function test_can_create_with_valid_input_and_auth()
     {
         $response = $this->postJson(
             $this->getBaseUrl(). 'create',
