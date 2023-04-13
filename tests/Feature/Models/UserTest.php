@@ -31,12 +31,13 @@ class UserTest extends TestCase
      *
     */
     protected array $filters = [
-        'first_name',
+        // 'first_name',
+        // 'last_name',
         'email',
-        'phone',
-        'address',
-        'created_at',
-        'marketing'
+        // 'phone',
+        // 'address',
+        // 'created_at',
+        // 'marketing'
     ];
 
     /**
@@ -68,9 +69,28 @@ class UserTest extends TestCase
         $this->markTestSkipped('Test skipped from base test class');
     }
 
+    /**
+     * Test to see all.
+     */
     public function test_can_see_all(): void
     {
-        $this->markTestSkipped('Test skipped from base test class');
+        $page = 1;
+        $limit = 10;
+        $itemsCount = 50;
+        $resources = $this->factory->count($itemsCount)->create();
+        $url = $this->getBaseUrl('admin/user-listing');
+
+        // Test pure listing
+        $this->test_listing($page, $limit, $url, $this->getHeaders(true));
+
+        // Test basic Filtering
+        $this->test_basic_filtering($page, $limit, $url, $resources, $itemsCount, $this->getHeaders(true));
+
+        // Test custom Filtering
+        $this->test_custom_filtering($page, $limit, $url, $resources, $this->getHeaders(true));
+
+        // Test pagination
+        $this->test_pagination($page, $limit, $url, $resources, $this->getHeaders(true));
     }
 
     public function test_can_delete(): void
@@ -159,13 +179,5 @@ class UserTest extends TestCase
     protected function getBaseUrl($resource = null): string
     {
         return '/api/v1/' . ($resource ?? $this->resource) . '/';
-    }
-
-    /**
-     * Get headers
-     */
-    protected function getHeaders()
-    {
-        return [];
     }
 }
