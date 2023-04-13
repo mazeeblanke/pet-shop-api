@@ -8,10 +8,9 @@ class UserFilter extends BaseFilter
 {
     /**
      * Specific filters.
-     *
      */
     protected array $filters = [
-        'email'
+        'email',
     ];
 
     /**

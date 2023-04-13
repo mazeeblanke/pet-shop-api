@@ -68,7 +68,6 @@ class UserController extends AuthController
         return $response;
     }
 
-
     /**
      * store a resource.
      *
@@ -199,7 +198,7 @@ class UserController extends AuthController
         return [
             'password' => bcrypt($request->password),
             'is_admin' => 0,
-            'is_marketing' => (bool)$request->is_marketing,
+            'is_marketing' => (bool) $request->is_marketing,
         ];
     }
 }
