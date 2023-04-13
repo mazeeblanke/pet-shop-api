@@ -1039,6 +1039,54 @@
                     }
                 }
             }
+        },
+        "/api/v1/convert-currency/{amount}/{currency}": {
+            "get": {
+                "tags": [
+                    "CurrencyConverter"
+                ],
+                "summary": "Exchange Currency Rate",
+                "description": "/**\nConvert Currency.",
+                "operationId": "convert-currency",
+                "parameters": [
+                    {
+                        "name": "amount",
+                        "in": "query",
+                        "description": "",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "default": ""
+                        }
+                    },
+                    {
+                        "name": "currency",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "default": "EUR"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "ok"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "404": {
+                        "description": "Page not found"
+                    },
+                    "422": {
+                        "description": "Unprocessable Entity"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                }
+            }
         }
     },
     "components": {
