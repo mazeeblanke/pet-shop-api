@@ -66,6 +66,9 @@ Route::post('/user/create', [UserController::class, 'store'])
 Route::group(['prefix' => 'admin'], function () {
     Route::post('/login', [AdminUserController::class, 'login'])
         ->name('admin.login');
+    Route::get('/user-listing', [AdminUserController::class, 'index'])
+        ->middleware(['auth:admin'])
+        ->name('admin.index');
     Route::get('/logout', [AdminUserController::class, 'logout'])
         ->name('admin.logout');
 });
