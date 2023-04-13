@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "a485f9bdb12c27a159fd424d8900d236",
+    "content-hash": "f16983f1c4d4bdf08609b398cf3f1912",
     "packages": [
         {
             "name": "brick/math",
@@ -1941,7 +1941,14 @@
             "dist": {
                 "type": "path",
                 "url": "packages/mazi/currency-converter",
-                "reference": "dcd763fb4111225d135a60b9d5cb39697a434cb9"
+                "reference": "0d82eaf81ae7caffc0daa3d96f2172a3cd6e4672"
+            },
+            "require": {
+                "darkaonline/l5-swagger": "^8.5",
+                "guzzlehttp/guzzle": "^7.5"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^10.0"
             },
             "type": "library",
             "extra": {
