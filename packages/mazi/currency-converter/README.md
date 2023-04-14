@@ -86,7 +86,11 @@ The package ships with a `Request` class i.e `packages/mazi/currency-converter/s
 -------------
 Tests are found in the test directory.
 
-To run tests, cd in to `mazi/currency-converter` directory and run `./vendor/bin/phpunit`
+Steps to run tests:
+
+1. cd in to `mazi/currency-converter` directory 
+2. RUN `composer install`
+3. RUN `./vendor/bin/phpunit`
 
 
 
