@@ -37,6 +37,8 @@ B) Follow the steps below
 8. RUN `php artisan migrate --seed`
 10. Done!
 
+
+
 ## Tests
 -------------
 Tests are found in the test directory. The project contains Feature tests.
@@ -49,6 +51,11 @@ Steps to run tests:
 1. cd into project dir
 2. RUN `php artisan test`
 
+## Currency Converter
+
+The project also includes a currency converter package at `packages/mazi/currency-converter`
+
+this is the full readme file `packages/mazi/currency-converter/README.md`
 API Description
 ---------------
 Navigate to `your-host/api/docs` to load the swagger API documentation. e.g `http://localhost:3000/api/documentation`
