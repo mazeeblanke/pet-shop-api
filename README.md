@@ -11,7 +11,9 @@ Install using any of the options below
 
 A) Using bash script
 
-RUN ` bash install.bash ` at the root of the project
+  1. Clone project and cd into project e.g `git clone https://github.com/mazeeblanke/pet-shop-api.git && cd pet-shop-api`
+
+  2. RUN ` bash install.bash ` at the root of the project
 
 B) Follow the steps below
 
