@@ -19,4 +19,17 @@ Installation
 
 API Description
 ---------------
-Navigate to `your-host/api/docs` to load the swagger API documentation.
+Navigate to `your-host/api/docs` to load the swagger API documentation. e.g `http://localhost:3000/api/documentation`
+
+
+Implemented Features
+--------------------
+Brands: Create, Read, Delete, List All
+
+Products: Create, Read, Delete, List All
+
+Category: Create, Read, Delete, List All
+
+User: Login, Logout, Create
+
+Admin: Login, Logout, User Listing
