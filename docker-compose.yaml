@@ -32,6 +32,19 @@ services:
       - pet-shop-data:/var/lib/mysql
     networks:
       - pet-shop-net
+  pet-shop-db-test:
+    image: mysql:latest
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: pet_shop-test
+      MYSQL_USER: mazi
+      MYSQL_PASSWORD: password
+    container_name: pet-shop-db-test
+    ports:
+      - 3309:3306
+      - 3310:3306
+    networks:
+      - pet-shop-net
   pet-shop-redis:
     image: redis:latest
     container_name: pet-shop-redis
@@ -39,5 +52,6 @@ services:
       - pet-shop-net
 volumes:
   pet-shop-data:
+  pet-shop-data-test:
 networks:
   pet-shop-net:

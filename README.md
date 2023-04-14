@@ -10,13 +10,24 @@ Installation
 1. Clone project
 2. Copy `.env.example` to `.env` i.e `cp .env.example .env`
 3. RUN `composer install`
-4. Run `docker-compose up` NB: Ensure no other docker containers are running
-5. Run `docker ps` to see running containers, and copy the hash/id of the app container. The image name should look like this `pet-shop-api_pet-shop-api`
-6. Run `docker exec -it [container_id] bash` to ssh into the running app container
-7. Run `php artisan key:generate`
-8. Run `php artisan migrate --seed`
-9. Run `php artisan test` for tests
+4. RUN `docker-compose up` NB: Ensure no other docker containers are running
+5. RUN `docker ps` to see running containers, and copy the hash/id of the app container. The image name should look like this `pet-shop-api_pet-shop-api`
+6. RUN `docker exec -it [container_id] bash` to ssh into the running app container
+7. RUN `php artisan key:generate`
+8. RUN `php artisan migrate --seed`
 10. Done!
+
+## Tests
+-------------
+Tests are found in the test directory. The project contains Feature tests.
+A sample configuration file has been included `.env.testing`, it is currently set to use mysql database, so therefore
+
+Also ensure to create a `storage/app/private-key.pem` for the asymmetric key before running tests. A sample .pem file has been include in the publoc dir. 
+
+Steps to run tests:
+
+1. cd into project dir
+2. RUN `php artisan test`
 
 API Description
 ---------------
