@@ -27,6 +27,7 @@ echo "Waiting for TEST MySQL server to start up..."
 until docker-compose exec pet-shop-db-test mysqladmin ping --silent; do
     sleep 10
 done
+
 echo "MySQL TEST server is now available!"
 
 # Securely set MYSQL Password
@@ -45,5 +46,13 @@ docker-compose exec pet-shop-api bash -c "php artisan key:generate"
 docker-compose exec pet-shop-api bash -c "php artisan migrate --seed"
 
 
-# Run tests
+# Run Pet Shop tests
+echo "Running PET SHOP Tests!"
 php artisan test
+
+
+echo "Navigate to Currency converter package!"
+cd packages/mazi/currency-converter && composer install
+
+echo "Running Currency Converter Tests!"
+./vendor/bin/phpunit
