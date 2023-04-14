@@ -5,8 +5,6 @@ services:
     build:
       context: .
       dockerfile: dockerfile
-    env_file:
-      - .env
     volumes:
       - /vendor
       - ./:/var/www/html
@@ -29,17 +27,20 @@ services:
       - 3307:3306
       - 3308:3306
     volumes:
+      - .env:/.env
       - pet-shop-data:/var/lib/mysql
     networks:
       - pet-shop-net
   pet-shop-db-test:
     image: mysql:latest
     environment:
-      MYSQL_ROOT_PASSWORD: password
-      MYSQL_DATABASE: pet_shop-test
-      MYSQL_USER: mazi
-      MYSQL_PASSWORD: password
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+      MYSQL_DATABASE: ${DB_DATABASE}
+      MYSQL_USER: ${DB_USERNAME}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
     container_name: pet-shop-db-test
+    volumes:
+      - .env.testing:/.env.testing
     ports:
       - 3309:3306
       - 3310:3306
