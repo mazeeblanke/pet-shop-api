@@ -5,6 +5,7 @@ A pet shop implementation.
 ## Requirements
  - PHP == 8.2
  - Docker Desktop
+ - Composer 
 
 ## Installation
 
