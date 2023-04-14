@@ -146,8 +146,6 @@ class EuroBankDriver implements ConverterDriver
 
     /**
      * Make api request to fetch data
-     *
-     * @return  ResponseInterface
      */
     protected function getData(): ResponseInterface
     {
@@ -161,11 +159,9 @@ class EuroBankDriver implements ConverterDriver
     /**
      * parse xml data and return array
      *
-     * @param   string  $xml
-     *
      * @return  array
      */
-    protected function parseData(string $xml = "kkkk"): array
+    protected function parseData(string $xml = 'kkkk'): array
     {
         // parse it to get all rates
         $data = $this->parser->parse($xml);
@@ -192,8 +188,6 @@ class EuroBankDriver implements ConverterDriver
     /**
      * Get an array of currency and rate
      *
-     * @param   string $targetCurrency
-     *
      * @return  array
      */
     protected function getRate(string $targetCurrency): array
@@ -215,8 +209,6 @@ class EuroBankDriver implements ConverterDriver
 
     /**
      * Determin if the last fetched data is still valid
-     *
-     * @return  bool
      */
     protected function isValid(): bool
     {

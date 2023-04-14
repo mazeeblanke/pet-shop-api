@@ -31,8 +31,8 @@ class ConverterFactory
     public static function make(
         string $driverName,
         Application $app,
-        ClientInterface $http = null,
-        Parser $parser = null,
+        ?ClientInterface $http = null,
+        ?Parser $parser = null,
     ) {
         // get driver from list of supported drivers
         if (! isset(self::DRIVERS[$driverName])) {
@@ -45,11 +45,11 @@ class ConverterFactory
         $driverClass = self::DRIVERS[$driverName];
 
         // If no hhtp client is specified, create a client instance.
-        $http = $http == null ? new Client() : $http;
+        $http = $http === null ? new Client() : $http;
 
         // If no parser is specified, create default parser instance.
         $defaultParserClass = self::DEFAULT_PARSERS[$driverName];
-        $parser = $parser == null ? new $defaultParserClass() : $parser;
+        $parser = $parser === null ? new $defaultParserClass() : $parser;
 
         $cache = $app->make(CacheRepository::class);
 
