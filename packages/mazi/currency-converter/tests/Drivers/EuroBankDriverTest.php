@@ -43,22 +43,57 @@ class EuroBankDriverTest extends TestCase
         $amount = 1.2;
 
         // Mocking dependencies
-        $configMock = $this->getMockForAbstractClass(
-            ConfigRepository::class
+        $configMock = $this->createConfigMock();
+
+        $httpMock = $this->createHttpMock();
+
+        $parserMock = $this->createParserMock();
+
+        $cacheMock = $this->createCacheMock($configMock);
+
+        $driver = new EuroBankDriver(
+            $httpMock,
+            $parserMock,
+            $cacheMock,
+            $configMock
         );
-        $configMock
-            ->method('get')
-            ->with($this->logicalOr(
-                $this->equalTo('cur-converter.cache-key'),
-                $this->equalTo('cur-converter.cache-time')
-            ))
-            ->will($this->returnCallback(array($this, 'loadConfig')));
+        $result = $driver->process($targetCurrency, $amount);
 
+        $this->assertSame($amount * 1.2, $result);
+    }
 
+    /** @test */
+    public function cached_data_is_used_when_available_instead_of_fetching_fresh_data()
+    {
+        $targetCurrency = Symbol::USD;
+        $amount = 1.2;
+
+        $configMock = $this->createConfigMock();
+        $cacheMock = $this->createCacheMock($configMock);
+
+        $httpMock = $this->createHttpMock();
+
+        $httpMock->expects($this->never())
+        ->method('request');
+
+        $parserMock = $this->createParserMock();
+
+        $driver = new EuroBankDriver(
+            $httpMock,
+            $parserMock,
+            $cacheMock,
+            $configMock
+        );
+        $result = $driver->process($targetCurrency, $amount);
+
+        $this->assertSame($amount * 1.2, $result);
+    }
+
+    private function createHttpMock(): ClientInterface
+    {
         $httpMock = $this->createMock(ClientInterface::class);
-        $httpMock
-            ->expects($this->once())
-            ->method('request')
+
+        $httpMock->method('request')
             ->willReturn(
                 new Response(
                     200,
@@ -67,10 +102,61 @@ class EuroBankDriverTest extends TestCase
                 )
             );
 
+        return $httpMock;
+    }
+
+    private function createConfigMock(): ConfigRepository
+    {
+        $configMock = $this->getMockForAbstractClass(
+            ConfigRepository::class
+        );
+
+        $configMock->method('get')
+            ->with($this->logicalOr(
+                $this->equalTo('cur-converter.cache-key'),
+                $this->equalTo('cur-converter.cache-time')
+            ))
+            ->will($this->returnCallback(array($this, 'loadConfig')));
+
+        return $configMock;
+    }
+
+    private function createCacheMock($configMock): CacheRepository
+    {
+        $cacheMock = $this->createMock(CacheRepository::class);
+
+        $cacheMock->method('put')
+            ->with(
+                $configMock->get('cur-converter.cache-key'),
+                [
+                    'rates' => [
+                        ['currency' => Symbol::USD, 'rate' => '1.2'],
+                        ['currency' => Symbol::EUR, 'rate' => '1'],
+                    ],
+                    'lastRefresh' => '2023-04-13',
+                ],
+                $configMock->get('cur-converter.cache-time')
+            );
+
+        $cacheMock
+            ->method('get')
+            ->with($configMock->get('cur-converter.cache-key'))
+            ->willReturn(                [
+                'rates' => [
+                    ['currency' => Symbol::USD, 'rate' => '1.2'],
+                    ['currency' => Symbol::EUR, 'rate' => '1'],
+                ],
+                'lastRefresh' => date('Y-m-d'),
+            ]);
+
+        return  $cacheMock;
+    }
+
+    private function createParserMock(): Parser
+    {
         $parserMock = $this->createMock(Parser::class);
-        $parserMock
-            ->expects($this->once())
-            ->method('parse')
+
+        $parserMock->method('parse')
             ->willReturn([
                 'Cube' => [
                     'Cube' => [
@@ -93,35 +179,11 @@ class EuroBankDriverTest extends TestCase
                 ]
             ]);
 
-        $cacheMock = $this->createMock(CacheRepository::class);
-        $cacheMock
-            ->expects($this->once())
-            ->method('put')
-            ->with(
-                $configMock->get('cur-converter.cache-key'),
-                [
-                    'rates' => [
-                        ['currency' => Symbol::USD, 'rate' => '1.2'],
-                        ['currency' => Symbol::EUR, 'rate' => '1'],
-                    ],
-                    'lastRefresh' => '2023-04-13',
-                ],
-                $configMock->get('cur-converter.cache-time')
-            );
-
-        $driver = new EuroBankDriver(
-            $httpMock,
-            $parserMock,
-            $cacheMock,
-            $configMock
-        );
-        $result = $driver->process($targetCurrency, $amount);
-
-        $this->assertSame($amount * 1.2, $result);
+        return $parserMock;
     }
 
-
-    public function loadConfig($config) {
+    public function loadConfig($config): string|int
+    {
         if ($config === 'cur-converter.cache-key') {
             return 'CUR-CONVERTER-RATES';
         }
