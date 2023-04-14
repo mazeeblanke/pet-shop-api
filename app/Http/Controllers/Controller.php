@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Repositories\Repository;
 use Exception;
+use Illuminate\Contracts\Cache\Repository as CacheRepository;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Foundation\Validation\ValidatesRequests;
@@ -46,6 +47,8 @@ class Controller extends BaseController
 
     protected Repository $repository;
 
+    protected CacheRepository $cache;
+
     protected array $with = [];
 
     public function __construct(Application $app)
@@ -56,6 +59,7 @@ class Controller extends BaseController
         $this->repository = $this->getRepository();
         $this->resource = $this->getResourceClass();
         $this->collection = $this->getCollectionClass();
+        $this->cache = $this->app->make(CacheRepository::class);
     }
 
     /**
@@ -101,7 +105,12 @@ class Controller extends BaseController
      */
     public function show($uuid)
     {
-        $model = $this->repository->getById($uuid, $this->with);
+        $cacheKey = 'model_'.$uuid.'_with_'.implode(',', $this->with);
+        $ttl = config('cache.default_ttlt');
+
+        $model = $this->cache->remember($cacheKey, $ttl, function () use ($uuid) {
+            return $this->repository->getById($uuid, $this->with);
+        });
 
         if (! $model) {
             return $this->respondWithError($this->getModelName() . ' not found');

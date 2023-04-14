@@ -45,10 +45,12 @@ class AppServiceProvider extends ServiceProvider
             );
         });
 
-        $this->app->singleton(ContractsConverter::class, function() {
+        $this->app->singleton(ContractsConverter::class, function () {
             return new Converter(
-                $this->app->make(ConverterDriver::class
-            ));
+                $this->app->make(
+                    ConverterDriver::class
+                )
+            );
         });
     }
 }
