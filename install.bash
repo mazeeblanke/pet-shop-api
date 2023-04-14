@@ -30,14 +30,17 @@ done
 
 echo "MySQL TEST server is now available!"
 
-# Securely set MYSQL Password
-export MYSQL_PWD="${DB_PASSWORD}"
+# Create MySQL DEV database securely
+docker-compose exec pet-shop-db bash -c "\
+        source .env && \
+        export MYSQL_PWD='${DB_PASSWORD}' && \
+        mysql -u root -e 'CREATE DATABASE IF NOT EXISTS ${DB_DATABASE};'"
 
-# Create MySQL DEV database
-docker-compose exec pet-shop-db mysql -uroot -p"${DB_PASSWORD}" -e "CREATE DATABASE IF NOT EXISTS pet_shop;"
-
-# Create MySQL TEST database
-docker-compose exec pet-shop-db-test mysql -uroot -p"${DB_PASSWORD}" -e "CREATE DATABASE IF NOT EXISTS pet_shop_test"
+# Create MySQL TEST database securely
+docker-compose exec pet-shop-db-test bash -c '\
+        source .env.testing && \
+        export MYSQL_PWD="${DB_PASSWORD}" && \
+        mysql -u root -e "CREATE DATABASE IF NOT EXISTS ${DB_DATABASE};"'
 
 # Generate app key
 docker-compose exec pet-shop-api bash -c "php artisan key:generate"
@@ -48,11 +51,23 @@ docker-compose exec pet-shop-api bash -c "php artisan migrate --seed"
 
 # Run Pet Shop tests
 echo "Running PET SHOP Tests!"
-php artisan test
+
+# Run tests locally
+# php artisan test
+
+# Run test in container
+docker-compose exec pet-shop-api bash -c 'source .env.testing && php artisan test'
 
 
-echo "Navigate to Currency converter package!"
-cd packages/mazi/currency-converter && composer install
 
-echo "Running Currency Converter Tests!"
-./vendor/bin/phpunit
+# # Run locally
+# echo "Navigate to Currency converter package!"
+# cd packages/mazi/currency-converter && composer install
+# echo "Running Currency Converter Tests!"
+#  ./vendor/bin/phpunit
+
+# Run in container
+docker-compose exec pet-shop-api bash -c 'cd packages/mazi/currency-converter && \
+                composer install && \
+                ./vendor/bin/phpunit'
+
