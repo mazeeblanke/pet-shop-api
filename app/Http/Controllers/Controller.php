@@ -106,7 +106,7 @@ class Controller extends BaseController
     public function show($uuid)
     {
         $cacheKey = 'model_'.$uuid.'_with_'.implode(',', $this->with);
-        $ttl = config('cache.default_ttlt');
+        $ttl = config('cache.default_ttl');
 
         $model = $this->cache->remember($cacheKey, $ttl, function () use ($uuid) {
             return $this->repository->getById($uuid, $this->with);
