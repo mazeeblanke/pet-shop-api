@@ -88,8 +88,11 @@ class EuroBankDriver implements ConverterDriver
         Symbol::ZAR,
     ];
 
-    public function __construct(ClientInterface $http, Parser $parser, Repository $cache)
-    {
+    public function __construct(
+        ClientInterface $http,
+        Parser $parser,
+        Repository $cache
+    ) {
         $this->http = $http;
         $this->parser = $parser;
         $this->cache = $cache;
