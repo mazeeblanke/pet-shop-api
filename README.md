@@ -7,12 +7,28 @@ A pet shop implementation.
 
 Installation
 ------------
-1. Clone project
-2. Copy `.env.example` to `.env` i.e `cp .env.example .env`
+
+A) Using bash script
+
+RUN ` bash install.bash ` at the root of the project
+
+B) Follow the steps below
+
+1. Clone project and cd into project e.g `git clone https://github.com/mazeeblanke/pet-shop-api.git && cd pet-shop-api`
+2. Copy `.env.example` to `.env` i.e `cp .env.example .env` and `.env.testing.example` to `.env.testing`
 3. RUN `composer install`
 4. RUN `docker-compose up` NB: Ensure no other docker containers are running
-5. RUN `docker ps` to see running containers, and copy the hash/id of the app container. The image name should look like this `pet-shop-api_pet-shop-api`
-6. RUN `docker exec -it [container_id] bash` to ssh into the running app container
+
+5. To gain access into the app container environment, use either method A or B
+``` 
+ A) RUN `docker-compose exec pet-shop-api bash`
+```
+```
+ B) RUN `docker ps` to see running containers, and copy the hash/id of the app container. The image name should look like this `pet-shop-api_pet-shop-api`
+
+    RUN `docker exec -it [container_id] bash` to ssh into the running app container
+```
+
 7. RUN `php artisan key:generate`
 8. RUN `php artisan migrate --seed`
 10. Done!
