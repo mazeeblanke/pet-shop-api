@@ -5,15 +5,12 @@ namespace Mazi\CurrencyConverter\Http\Controllers;
 use Illuminate\Foundation\Application;
 use Illuminate\Routing\Controller as BaseController;
 use Mazi\CurrencyConverter\Contracts\Converter as ContractsConverter;
-use Mazi\CurrencyConverter\Contracts\ConverterDriver;
-use Mazi\CurrencyConverter\Converter;
 use Mazi\CurrencyConverter\Http\Requests\ConversionRequest;
 
 class Controller extends BaseController
 {
-/**
- *
     /**
+     * /**
      *   Convert Currency.
      *
      *   @OA\Get(

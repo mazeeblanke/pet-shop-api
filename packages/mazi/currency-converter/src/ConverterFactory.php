@@ -12,8 +12,6 @@ class ConverterFactory
 {
     /**
      * Supported drivers
-     *
-     * @var array
      */
     protected const DRIVERS = [
         'eurobankDriver' => EuroBankDriver::class,
@@ -22,12 +20,12 @@ class ConverterFactory
     public static function make(string $driverName, ClientInterface $http, Application $app)
     {
         // get driver from list of supported drivers
-        if (!isset(static::DRIVERS[$driverName])) {
+        if (! isset(self::DRIVERS[$driverName])) {
             throw new Exception("{$driverName} is not a supported driver.");
         }
 
         // initialize it with dependencies
-        $driverClass = static::DRIVERS[$driverName];
+        $driverClass = self::DRIVERS[$driverName];
 
         $parser = $app->make(Parser::class);
 

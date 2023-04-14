@@ -14,31 +14,21 @@ class EuroBankDriver implements ConverterDriver
 {
     /**
      * The api url for driver
-     *
-     * @var string
      */
     protected string $apiURL = 'https://www.ecb.europa.eu/stats/eurofxref/eurofxref-daily.xml';
 
     /**
      * http client
-     *
-     * @var ClientInterface
      */
     protected ClientInterface $http;
 
     /**
      * The base currency
-     *
-     * @var string $baseCurrency
-     *
      */
     protected string $baseCurrency = Symbol::EUR;
 
     /**
      * The last time checked
-     *
-     * @var string $baseCurrency
-     *
      */
     protected string $lastDate;
 
@@ -46,14 +36,11 @@ class EuroBankDriver implements ConverterDriver
      * rates
      *
      * @var string $baseCurrency
-     *
      */
     protected array $rates;
 
     /**
      * Parser that does the work of parsing
-     *
-     * @var Parser
      */
     protected Parser $parser;
 
@@ -98,7 +85,7 @@ class EuroBankDriver implements ConverterDriver
         Symbol::PHP,
         Symbol::SGD,
         Symbol::THB,
-        Symbol::ZAR
+        Symbol::ZAR,
     ];
 
     public function __construct(ClientInterface $http, Parser $parser, Repository $cache)
@@ -110,18 +97,13 @@ class EuroBankDriver implements ConverterDriver
 
     /**
      * Process the conversion
-     *
-     * @param   string  $targetCurrency
-     * @param   string  $amount
-     *
-     * @return  string
      */
-    public function process($targetCurrency, $amount): string
+    public function process(string $targetCurrency, string $amount): string
     {
         $targetCurrency = strtoupper($targetCurrency);
 
         // check if target currency is supported
-        if(!in_array($targetCurrency, $this->supportedSymbols)) {
+        if (! in_array($targetCurrency, $this->supportedSymbols)) {
             throw new UnsupportedCurrencySymbol(
                 'Driver does not support symbol ' . $targetCurrency
             );
@@ -136,7 +118,7 @@ class EuroBankDriver implements ConverterDriver
         $this->rates = $cachedData['rates'] ?? [];
 
         // if not already set and still valid
-        if (!isset($this->rates) || !$this->isValid()) {
+        if (! isset($this->rates) || ! $this->isValid()) {
             $this->parseData(
                 $this->getData()
             );
@@ -167,7 +149,7 @@ class EuroBankDriver implements ConverterDriver
         $this->lastDate = $data['Cube']['Cube']['@attributes']['time'];
 
         $this->rates = array_map(
-            fn($arr) => $arr['@attributes'],
+            static fn ($arr) => $arr['@attributes'],
             $data['Cube']['Cube']['Cube']
         );
 
@@ -175,7 +157,7 @@ class EuroBankDriver implements ConverterDriver
             config('cur-converter.cache-key'),
             [
                 'rates' => $this->rates,
-                'lastRefresh' => $this->lastDate
+                'lastRefresh' => $this->lastDate,
             ],
             config('cur-converter.cache-time')
         );
@@ -187,11 +169,11 @@ class EuroBankDriver implements ConverterDriver
     {
         $currency = array_filter(
             $this->rates,
-            fn($arr) => $arr['currency'] == $targetCurrency
+            static fn ($arr) => $arr['currency'] === $targetCurrency
         );
 
         // if no results
-        if (count($currency) == 0) {
+        if (count($currency) === 0) {
             throw new CurrencyNotFound(
                 'Unable to find currency ' . $targetCurrency
             );
@@ -203,6 +185,6 @@ class EuroBankDriver implements ConverterDriver
     protected function isValid()
     {
         return isset($this->lastDate) &&
-        $this->lastDate == date('Y-m-d');
+        $this->lastDate === date('Y-m-d');
     }
 }

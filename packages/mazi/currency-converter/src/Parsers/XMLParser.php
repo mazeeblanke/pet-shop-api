@@ -10,8 +10,6 @@ class XMLParser implements Parser
     /**
      * Do the hard work of parsing
      *
-     * @param   string  $xmlData
-     *
      * @return  array
      */
     public function parse(string $xmlData): array
@@ -22,8 +20,8 @@ class XMLParser implements Parser
             LIBXML_NOCDATA
         );
 
-        if (!$xml) {
-            throw new EmptyXML("XML data is empty, unable to parse!");
+        if (! $xml) {
+            throw new EmptyXML('XML data is empty, unable to parse!');
         }
 
         return $this->getData($xml);
@@ -44,4 +42,3 @@ class XMLParser implements Parser
         );
     }
 }
-

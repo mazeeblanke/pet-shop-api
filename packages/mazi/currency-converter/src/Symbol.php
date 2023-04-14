@@ -7,8 +7,7 @@ use ReflectionException;
 
 /**
  * Symbol class representing currencies abbr
- *
-*/
+ */
 class Symbol
 {
     public const AED = 'AED'; // United Arab Emirates Dirham
@@ -349,38 +348,33 @@ class Symbol
         'ZWL' => 'Zimbabwean Dollar',
     ];
 
-   /**
-   * @return array
-   *
-   * @throws ReflectionException
-   */
-  public static function all(): array
-  {
-    return array_values((new ReflectionClass(static::class))->getConstants());
-  }
+    /**
+     * @return array
+     *
+     * @throws ReflectionException
+     */
+    public static function all(): array
+    {
+        return array_values((new ReflectionClass(static::class))->getConstants());
+    }
 
-  /**
-   * Retrieve the name of a currency by its symbol.
-   *
-   * @param mixed $currency The currency symbol.
-   *
-   * @return string
-   */
-  public static function name(string $currency): string
-  {
-    return isset(static::$currencyNames[$currency]) ? static::$currencyNames[$currency] : null;
-  }
+    /**
+     * Retrieve the name of a currency by its symbol.
+     *
+     * @param mixed $currency The currency symbol.
+     */
+    public static function name(string $currency): string
+    {
+        return static::$currencyNames[$currency] ?? null;
+    }
 
-  /**
-   * Retrieve an array of all currencies with their names.
-   *
-   * @return array
-   */
-  public static function names(): array
-  {
-    return static::$currencyNames;
-  }
-
+    /**
+     * Retrieve an array of all currencies with their names.
+     *
+     * @return array
+     */
+    public static function names(): array
+    {
+        return static::$currencyNames;
+    }
 }
-
-
