@@ -7,6 +7,7 @@ A pet shop implementation.
 
 Installation
 ------------
+Install using any of the options below
 
 A) Using bash script
 
