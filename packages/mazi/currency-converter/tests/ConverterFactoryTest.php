@@ -1,7 +1,8 @@
 <?php
 
-use Illuminate\Cache\Repository as CacheRepository;
-use Illuminate\Foundation\Application;
+use Illuminate\Contracts\Cache\Repository as CacheRepository;
+use Illuminate\Contracts\Config\Repository as ConfigRepository;
+use Illuminate\Contracts\Foundation\Application as FoundationApplication;
 use Mazi\CurrencyConverter\Contracts\Converter;
 use Mazi\CurrencyConverter\ConverterFactory;
 use Mazi\CurrencyConverter\Exceptions\DriverNotFound;
@@ -14,11 +15,14 @@ class ConverterFactoryTest extends TestCase
     public function can_init_driver()
     {
 
-        $app = $this->createMock(Application::class);
-        $cacheRepository = $this->createMock(CacheRepository::class);
+        $app = $this->createMock(FoundationApplication::class);
+
         $app->method('make')
-            ->with(CacheRepository::class)
-            ->willReturn($cacheRepository);
+            ->with($this->logicalOr(
+                $this->equalTo(ConfigRepository::class),
+                $this->equalTo(CacheRepository::class)
+            ))
+           ->will($this->returnCallback(array($this, 'createMockInstance')));
 
 
         $this->assertInstanceOf(
@@ -28,6 +32,10 @@ class ConverterFactoryTest extends TestCase
                 $app
             )
         );
+    }
+
+    public function createMockInstance($class) {
+        return $this->createMock($class);
     }
 
     /** @test */
@@ -45,7 +53,7 @@ class ConverterFactoryTest extends TestCase
     /** @test */
     public function will_throw_exception_if_using_invalid_driver()
     {
-        $app = $this->createMock(Application::class);
+        $app = $this->createMock(FoundationApplication::class);
         $this->expectException(DriverNotFound::class);
         ConverterFactory::make('not-existing', $app);
     }

@@ -12,5 +12,5 @@ interface ConverterDriver
      *
      * @return  string                   conversion amount
      */
-    public function process(string $targetCurrency, string $amount): string;
+    public function process(string $targetCurrency, string $amount): float;
 }

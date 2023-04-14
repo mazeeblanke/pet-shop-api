@@ -1040,7 +1040,7 @@
                 }
             }
         },
-        "/api/v1/convert-currency/{amount}/{currency}": {
+        "/api/v1/convert-currency": {
             "get": {
                 "tags": [
                     "CurrencyConverter"
@@ -1055,7 +1055,8 @@
                         "description": "",
                         "required": true,
                         "schema": {
-                            "type": "integer",
+                            "type": "number",
+                            "format": "float",
                             "default": ""
                         }
                     },

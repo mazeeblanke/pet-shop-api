@@ -14,7 +14,7 @@ class Controller extends BaseController
      *   Convert Currency.
      *
      *   @OA\Get(
-     *     path="/api/v1/convert-currency/{amount}/{currency}",
+     *     path="/api/v1/convert-currency",
      *     tags={"CurrencyConverter"},
      *     summary="Exchange Currency Rate",
      *     operationId="convert-currency",
@@ -25,7 +25,8 @@ class Controller extends BaseController
      *         required=true,
      *         @OA\Schema(
      *             default="",
-     *             type="integer",
+     *             type="number",
+     *             format="float"
      *         )
      *     ),
      *     @OA\Parameter(

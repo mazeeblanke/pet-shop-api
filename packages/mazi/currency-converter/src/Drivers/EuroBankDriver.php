@@ -3,12 +3,14 @@
 namespace Mazi\CurrencyConverter\Drivers;
 
 use GuzzleHttp\ClientInterface;
-use Illuminate\Contracts\Cache\Repository;
+use Illuminate\Contracts\Cache\Repository as CacheRepository;
+use Illuminate\Contracts\Config\Repository as ConfigRepository;
 use Mazi\CurrencyConverter\Contracts\ConverterDriver;
 use Mazi\CurrencyConverter\Contracts\Parser;
 use Mazi\CurrencyConverter\Exceptions\CurrencyNotFound;
 use Mazi\CurrencyConverter\Exceptions\UnsupportedCurrencySymbol;
 use Mazi\CurrencyConverter\Symbol;
+use Psr\Http\Message\ResponseInterface;
 
 class EuroBankDriver implements ConverterDriver
 {
@@ -49,7 +51,14 @@ class EuroBankDriver implements ConverterDriver
      *
      * @var [type]
      */
-    protected Repository $cache;
+    protected CacheRepository $cache;
+
+    /**
+     * Config service
+     *
+     * @var [type]
+     */
+    protected ConfigRepository $config;
 
     /**
      * List of symbols supported by driver
@@ -91,17 +100,19 @@ class EuroBankDriver implements ConverterDriver
     public function __construct(
         ClientInterface $http,
         Parser $parser,
-        Repository $cache
+        CacheRepository $cache,
+        ConfigRepository $config
     ) {
         $this->http = $http;
         $this->parser = $parser;
         $this->cache = $cache;
+        $this->config = $config;
     }
 
     /**
      * Process the conversion
      */
-    public function process(string $targetCurrency, string $amount): string
+    public function process(string $targetCurrency, string $amount): float
     {
         $targetCurrency = strtoupper($targetCurrency);
 
@@ -113,7 +124,7 @@ class EuroBankDriver implements ConverterDriver
         }
 
         $cachedData = $this->cache->get(
-            config('cur-converter.cache-key'),
+            $this->config->get('cur-converter.cache-key'),
             []
         );
 
@@ -123,28 +134,38 @@ class EuroBankDriver implements ConverterDriver
         // if not already set and still valid
         if (! isset($this->rates) || ! $this->isValid()) {
             $this->parseData(
-                $this->getData()
+                $this->getData()->getBody()
             );
         }
 
         $currency = $this->getRate($targetCurrency);
 
         // multiply by amout and return
-        return $currency['rate'] * $amount;
+        return (float) $currency['rate'] * (float) $amount;
     }
 
-    protected function getData()
+    /**
+     * Make api request to fetch data
+     *
+     * @return  ResponseInterface
+     */
+    protected function getData(): ResponseInterface
     {
-        $response = $this->http
+        return $this->http
             ->request(
                 'GET',
                 $this->apiURL
             );
-
-        return $response->getBody();
     }
 
-    protected function parseData($xml)
+    /**
+     * parse xml data and return array
+     *
+     * @param   string  $xml
+     *
+     * @return  array
+     */
+    protected function parseData(string $xml = "kkkk"): array
     {
         // parse it to get all rates
         $data = $this->parser->parse($xml);
@@ -157,18 +178,25 @@ class EuroBankDriver implements ConverterDriver
         );
 
         $this->cache->put(
-            config('cur-converter.cache-key'),
+            $this->config->get('cur-converter.cache-key'),
             [
                 'rates' => $this->rates,
                 'lastRefresh' => $this->lastDate,
             ],
-            config('cur-converter.cache-time')
+            $this->config->get('cur-converter.cache-time')
         );
 
         return $this->rates;
     }
 
-    protected function getRate($targetCurrency)
+    /**
+     * Get an array of currency and rate
+     *
+     * @param   string $targetCurrency
+     *
+     * @return  array
+     */
+    protected function getRate(string $targetCurrency): array
     {
         $currency = array_filter(
             $this->rates,
@@ -185,7 +213,12 @@ class EuroBankDriver implements ConverterDriver
         return reset($currency);
     }
 
-    protected function isValid()
+    /**
+     * Determin if the last fetched data is still valid
+     *
+     * @return  bool
+     */
+    protected function isValid(): bool
     {
         return isset($this->lastDate) &&
         $this->lastDate === date('Y-m-d');

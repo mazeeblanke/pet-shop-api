@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use Illuminate\Config\Repository as ConfigRepository;
 use Illuminate\Contracts\Cache\Repository;
 use Illuminate\Support\ServiceProvider;
 use Mazi\CurrencyConverter\Contracts\Converter as ContractsConverter;
@@ -39,7 +40,8 @@ class AppServiceProvider extends ServiceProvider
             return new EuroBankDriver(
                 new \GuzzleHttp\Client(),
                 $this->app->make(Parser::class),
-                $this->app->make(Repository::class)
+                $this->app->make(Repository::class),
+                $this->app->make(ConfigRepository::class)
             );
         });
 

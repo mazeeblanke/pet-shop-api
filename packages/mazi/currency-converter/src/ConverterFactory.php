@@ -4,10 +4,9 @@ namespace Mazi\CurrencyConverter;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\ClientInterface;
-use Illuminate\Cache\CacheManager;
-use Illuminate\Cache\Repository as CacheRepository;
-use Illuminate\Contracts\Cache\Repository;
-use Illuminate\Foundation\Application;
+use Illuminate\Contracts\Cache\Repository as CacheRepository;
+use Illuminate\Contracts\Config\Repository as ConfigRepository;
+use Illuminate\Contracts\Foundation\Application;
 use Mazi\CurrencyConverter\Contracts\Parser;
 use Mazi\CurrencyConverter\Drivers\EuroBankDriver;
 use Mazi\CurrencyConverter\Exceptions\DriverNotFound;
@@ -34,7 +33,6 @@ class ConverterFactory
         Application $app,
         ClientInterface $http = null,
         Parser $parser = null,
-        Repository $cache = null
     ) {
         // get driver from list of supported drivers
         if (! isset(self::DRIVERS[$driverName])) {
@@ -53,12 +51,13 @@ class ConverterFactory
         $defaultParserClass = self::DEFAULT_PARSERS[$driverName];
         $parser = $parser == null ? new $defaultParserClass() : $parser;
 
-        // If no cache is specified, create a cache instance.
-        $cache = $cache == null ? $app->make(CacheRepository::class) : $cache;
+        $cache = $app->make(CacheRepository::class);
+
+        $config = $app->make(ConfigRepository::class);
 
         // return instance of Converter class
         return new Converter(
-            new $driverClass($http, $parser, $cache)
+            new $driverClass($http, $parser, $cache, $config)
         );
     }
 
