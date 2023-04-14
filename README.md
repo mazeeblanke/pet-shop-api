@@ -55,7 +55,8 @@ Steps to run tests:
 
 The project also includes a currency converter package at `packages/mazi/currency-converter`
 
-this is the full readme file `packages/mazi/currency-converter/README.md`
+This is the full readme file `packages/mazi/currency-converter/README.md`
+
 API Description
 ---------------
 Navigate to `your-host/api/docs` to load the swagger API documentation. e.g `http://localhost:3000/api/documentation`

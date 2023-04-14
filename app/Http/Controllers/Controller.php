@@ -84,7 +84,11 @@ class Controller extends BaseController
     {
         $request = $this->validateFormStoreRequest();
 
-        $data = array_merge($request->all(), ['uuid' => Str::uuid()], $this->getExtraData($request));
+        $data = array_merge(
+            $request->all(),
+            ['uuid' => Str::uuid()],
+            $this->getExtraData($request)
+        );
 
         try {
             $model = $this->repository->create($data);
@@ -108,12 +112,15 @@ class Controller extends BaseController
         $cacheKey = 'model_'.$uuid.'_with_'.implode(',', $this->with);
         $ttl = config('cache.default_ttl');
 
-        $model = $this->cache->remember($cacheKey, $ttl, function () use ($uuid) {
-            return $this->repository->getById($uuid, $this->with);
-        });
+        $model = $this->cache
+            ->remember($cacheKey, $ttl, function () use ($uuid) {
+                return $this->repository->getById($uuid, $this->with);
+            });
 
         if (! $model) {
-            return $this->respondWithError($this->getModelName() . ' not found');
+            return $this->respondWithError(
+                $this->getModelName() . ' not found'
+            );
         }
 
         return $this->respondWithSuccess(new $this->resource($model));

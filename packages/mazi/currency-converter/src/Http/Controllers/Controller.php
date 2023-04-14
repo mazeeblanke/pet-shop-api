@@ -6,6 +6,7 @@ use Illuminate\Foundation\Application;
 use Illuminate\Routing\Controller as BaseController;
 use Mazi\CurrencyConverter\Contracts\Converter as ContractsConverter;
 use Mazi\CurrencyConverter\Http\Requests\ConversionRequest;
+use Mazi\CurrencyConverter\Symbol;
 
 class Controller extends BaseController
 {
@@ -68,9 +69,22 @@ class Controller extends BaseController
         // handle conversion
         $converter = $app->make(ContractsConverter::class);
 
-        return $converter->change(
+        $convertedAmount = $converter->change(
             $amount,
             $currency
         );
+
+        return response()->json([
+            'data' => [
+                'originalAmount' => $amount,
+                'originalCurrency' => Symbol::EUR,
+                'targetCurrency' => $currency,
+                'convertedAmount' => $convertedAmount
+            ],
+            'error' => null,
+            'errors' => [],
+            'extra' => [],
+            'success' => 1,
+        ], 200);
     }
 }
