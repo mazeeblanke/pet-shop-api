@@ -36,7 +36,7 @@ export MYSQL_PWD="${DB_PASSWORD}"
 docker-compose exec pet-shop-db mysql -uroot -p"${DB_PASSWORD}" -e "CREATE DATABASE IF NOT EXISTS pet_shop;"
 
 # Create MySQL TEST database
-docker-compose exec pet-shop-db-test mysql -uroot -p"${DB_PASSWORD}" -e "CREATE DATABASE IF NOT EXISTS pet_shop_test_12345"
+docker-compose exec pet-shop-db-test mysql -uroot -p"${DB_PASSWORD}" -e "CREATE DATABASE IF NOT EXISTS pet_shop_test"
 
 # Generate app key
 docker-compose exec pet-shop-api bash -c "php artisan key:generate"
