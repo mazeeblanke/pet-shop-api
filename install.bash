@@ -4,6 +4,9 @@
 cp .env.example .env
 cp .env.testing.example .env.testing
 
+# copy pem file
+cp public/private-key.pem storage/app
+
 # Load environment variables
 source .env
 
