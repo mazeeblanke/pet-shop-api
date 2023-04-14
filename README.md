@@ -14,7 +14,7 @@ A) Using bash script
 
   1. Clone project and cd into project e.g `git clone https://github.com/mazeeblanke/pet-shop-api.git && cd pet-shop-api`
 
-  2. RUN ` bash install.bash ` at the root of the project
+  2. RUN ` bash install.bash ` at the root of the project `NB: Ensure docker desktop is running`
   3. Application now running on `http://localhost:3000/`
   4. Swagger documentation running on `http://localhost:3000/api/documentation`
   5. Done!
