@@ -2,7 +2,12 @@
 
 namespace Mazi\CurrencyConverter\Http\Controllers;
 
+use Illuminate\Foundation\Application;
 use Illuminate\Routing\Controller as BaseController;
+use Mazi\CurrencyConverter\Contracts\Converter as ContractsConverter;
+use Mazi\CurrencyConverter\Contracts\ConverterDriver;
+use Mazi\CurrencyConverter\Converter;
+use Mazi\CurrencyConverter\Http\Requests\ConversionRequest;
 
 class Controller extends BaseController
 {
@@ -57,8 +62,17 @@ class Controller extends BaseController
      *     ),
      * )
      */
-    public function convert()
+    public function convert(ConversionRequest $request, Application $app)
     {
+        $amount = $request->amount;
+        $currency = $request->currency;
+
         // handle conversion
+        $converter = $app->make(ContractsConverter::class);
+
+        return $converter->change(
+            $amount,
+            $currency
+        );
     }
 }
