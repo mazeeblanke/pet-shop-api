@@ -15,6 +15,9 @@ A) Using bash script
   1. Clone project and cd into project e.g `git clone https://github.com/mazeeblanke/pet-shop-api.git && cd pet-shop-api`
 
   2. RUN ` bash install.bash ` at the root of the project
+  3. Application now running on `http://localhost:3000/`
+  4. Swagger documentation running on `http://localhost:3000/api/documentation`
+  5. Done!
 
 B) Follow the steps below
 
@@ -35,7 +38,9 @@ B) Follow the steps below
 
 7. RUN `php artisan key:generate`
 8. RUN `php artisan migrate --seed`
-10. Done!
+9. Application now running on `http://localhost:3000/`
+10. Swagger documentation running on `http://localhost:3000/api/documentation`
+11. Done!
 
 
 
