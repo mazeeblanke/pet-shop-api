@@ -6,8 +6,8 @@ A pet shop implementation.
  - PHP == 8.2
  - Docker Desktop
 
-Installation
-------------
+## Installation
+
 Install using any of the options below
 
 A) Using bash script
@@ -40,7 +40,7 @@ B) Follow the steps below
 
 
 ## Tests
--------------
+
 Tests are found in the test directory. The project contains Feature tests.
 A sample configuration file has been included `.env.testing`, it is currently set to use mysql database, so therefore
 
