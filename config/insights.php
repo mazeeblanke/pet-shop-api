@@ -85,6 +85,17 @@ return [
         PropertyTypeHintSniff::class,
         ReturnTypeHintSniff::class,
         UselessFunctionDocCommentSniff::class,
+        UnusedParameterSniff::class,
+        LineLengthSniff::class,
+        DocCommentSpacingSniff::class,
+        ClassInstantiationSniff::class,
+        NewWithBracesFixer::class,
+        NullableTypeForNullDefaultValueSniff::class,
+        DisallowArrayTypeHintSyntaxSniff::class,
+        NoEmptyCommentFixer::class,
+        DisallowShortTernaryOperatorSniff::class,
+        ForbiddenPublicPropertySniff::class,
+        DisallowEmptySniff::class
     ],
 
     'config' => [
