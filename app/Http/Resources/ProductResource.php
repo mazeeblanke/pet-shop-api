@@ -19,21 +19,21 @@ class ProductResource extends JsonResource
         }
 
         if ($this->resource->wasRecentlyCreated) {
-            return [ 'uuid' => $this->uuid ];
+            return [ 'uuid' => $this->resource->uuid ];
         }
 
         return [
-            'uuid' => $this->uuid,
-            'category_uuid' => $this->category_uuid,
-            'title' => $this->title,
-            'price' => $this->price,
-            'description' => $this->description,
-            'created_at' => $this->created_at,
-            'updated_at' => $this->updated_at,
-            'deleted_at' => $this->deleted_at,
-            'metadata' => $this->metadata,
-            'category' => new CategoryResource($this->category),
-            'brand' => new BrandResource($this->brand),
+            'uuid' => $this->resource->uuid,
+            'category_uuid' => $this->resource->category_uuid,
+            'title' => $this->resource->title,
+            'price' => $this->resource->price,
+            'description' => $this->resource->description,
+            'created_at' => $this->resource->created_at,
+            'updated_at' => $this->resource->updated_at,
+            'deleted_at' => $this->resource->deleted_at,
+            'metadata' => $this->resource->metadata,
+            'category' => new CategoryResource($this->resource->category),
+            'brand' => new BrandResource($this->resource->brand),
         ];
     }
 

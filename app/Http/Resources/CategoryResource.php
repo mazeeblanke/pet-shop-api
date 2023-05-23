@@ -19,15 +19,15 @@ class CategoryResource extends JsonResource
         }
 
         if ($this->resource->wasRecentlyCreated) {
-            return [ 'uuid' => $this->uuid ];
+            return [ 'uuid' => $this->resource->uuid ];
         }
 
         return [
-            'uuid' => $this->uuid,
-            'title' => $this->title,
-            'slug' => $this->slug,
-            'created_at' => $this->created_at,
-            'updated_at' => $this->updated_at,
+            'uuid' => $this->resource->uuid,
+            'title' => $this->resource->title,
+            'slug' => $this->resource->slug,
+            'created_at' => $this->resource->created_at,
+            'updated_at' => $this->resource->updated_at,
         ];
     }
 
