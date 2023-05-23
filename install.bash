@@ -34,7 +34,6 @@ docker-compose exec pet-shop-db bash -c '\
 docker-compose exec pet-shop-db bash -c '\
         source /data/.env.testing && \
         export MYSQL_PWD="${DB_PASSWORD}" && \
-        echo ${DB_DATABASE} && \
         mysql -u root -e "CREATE DATABASE IF NOT EXISTS ${DB_DATABASE};"'
 
 # Generate app key
