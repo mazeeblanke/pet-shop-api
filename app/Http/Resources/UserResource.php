@@ -5,6 +5,7 @@ namespace App\Http\Resources;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
+/** @mixin \App\Models\User */
 class UserResource extends JsonResource
 {
     /**
@@ -23,18 +24,18 @@ class UserResource extends JsonResource
         }
 
         return [
-            'uuid' => $this->resource->uuid,
-            'first_name' => $this->resource->first_name,
-            'last_name' => $this->resource->last_name,
-            'email' => $this->resource->email,
-            'avatar' => $this->resource->avatar,
-            'address' => $this->resource->address,
-            'phone_number' => $this->resource->phone_number,
-            'is_marketing' => $this->resource->is_marketing,
-            'updated_at' => $this->resource->updated_at,
-            'created_at' => $this->resource->created_at,
-            'email_verified_at' => $this->resource->email_verified_at,
-            'last_login_at' => $this->resource->last_login_at,
+            'uuid' => $this->uuid,
+            'first_name' => $this->first_name,
+            'last_name' => $this->last_name,
+            'email' => $this->email,
+            'avatar' => $this->avatar,
+            'address' => $this->address,
+            'phone_number' => $this->phone_number,
+            'is_marketing' => $this->is_marketing,
+            'updated_at' => $this->updated_at,
+            'created_at' => $this->created_at,
+            'email_verified_at' => $this->email_verified_at,
+            'last_login_at' => $this->last_login_at,
         ];
     }
 
