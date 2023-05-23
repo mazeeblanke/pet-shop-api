@@ -568,6 +568,20 @@
                         return $instance->make($abstract, $parameters);
         }
                     /**
+         * Resolve the given type from the container.
+         *
+         * @param string $abstract
+         * @param array $parameters
+         * @param bool $raiseEvents
+         * @return mixed 
+         * @static 
+         */ 
+        public static function resolve($abstract, $parameters = [], $raiseEvents = true)
+        {
+                        /** @var \Illuminate\Foundation\Application $instance */
+                        return $instance->resolve($abstract, $parameters, $raiseEvents);
+        }
+                    /**
          * Determine if the given abstract type has been bound.
          *
          * @param string $abstract
@@ -1441,6 +1455,18 @@
         {            //Method inherited from \Illuminate\Container\Container         
                         /** @var \Illuminate\Foundation\Application $instance */
                         $instance->forgetExtenders($abstract);
+        }
+                    /**
+         * Drop all of the stale instances and aliases.
+         *
+         * @param string $abstract
+         * @return void 
+         * @static 
+         */ 
+        public static function dropStaleInstances($abstract)
+        {            //Method inherited from \Illuminate\Container\Container         
+                        /** @var \Illuminate\Foundation\Application $instance */
+                        $instance->dropStaleInstances($abstract);
         }
                     /**
          * Remove a resolved instance from the instance cache.
