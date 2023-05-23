@@ -176,7 +176,7 @@ class UserTest extends TestCase
      * Get base url
      *
      */
-    protected function getBaseUrl($resource = null): string
+    protected function getBaseUrl(string $resource = null): string
     {
         return '/api/v1/' . ($resource ?? $this->resource) . '/';
     }

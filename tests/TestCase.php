@@ -4,7 +4,9 @@ namespace Tests;
 
 use App\Models\User;
 use App\Services\Auth\JWT;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
 use Illuminate\Http\Response;
@@ -59,13 +61,13 @@ abstract class TestCase extends BaseTestCase
      * Token string
      *
      */
-    protected string $token;
+    protected string|null $token;
 
     /**
      * Admin token string
      *
      */
-    protected string $adminToken;
+    protected string|null $adminToken;
 
     /**
      * Valid request input
@@ -103,7 +105,7 @@ abstract class TestCase extends BaseTestCase
         $this->setUser();
     }
 
-    protected function setUser()
+    protected function setUser(): void
     {
         $this->user = User::factory()->create();
         auth()->login($this->user);
@@ -134,7 +136,8 @@ abstract class TestCase extends BaseTestCase
     protected function getHeaders(bool $forAdmin = false): array
     {
         return [
-            'Authorization' => 'Bearer ' . ($forAdmin ? $this->adminToken  : $this->token)
+            'Authorization' => 'Bearer ' .
+            ($forAdmin ? $this->adminToken  : $this->token)
         ];
     }
 
@@ -162,14 +165,14 @@ abstract class TestCase extends BaseTestCase
      */
     protected function getBaseName(): string
     {
-        return $this->modelName ?? preg_replace('/Test/', '', class_basename($this));
+        return preg_replace('/Test/', '', class_basename($this)) ?? $this->modelName;
     }
 
     /**
      * Get base url
      *
      */
-    protected function getBaseUrl($resource = null): string
+    protected function getBaseUrl(string $resource = null): string
     {
         return '/api/v1/' . ($resource ?? $this->resource) . '/';
     }
@@ -178,7 +181,10 @@ abstract class TestCase extends BaseTestCase
      * Get the resource data
      *
      */
-    protected function getData(array $resource, bool $ignoreNested = false): array
+    protected function getData(
+        array $resource,
+        bool $ignoreNested = false
+    ): array
     {
         $data = [];
 
@@ -215,7 +221,9 @@ abstract class TestCase extends BaseTestCase
         $page = 1;
         $limit = 10;
         $itemsCount = 50;
-        $resources = $this->factory->count($itemsCount)->create();
+        $resources = $this->factory
+            ->count($itemsCount)
+            ->create();
         $url = $this->getBaseUrl(Str::plural($this->resource));
 
         // Test pure listing
@@ -249,7 +257,7 @@ abstract class TestCase extends BaseTestCase
     public function test_can_show(): void
     {
         $resource = $this->factory->create();
-        $response = $this->getJson($this->getBaseUrl() . $resource->created_at);
+        $response = $this->getJson($this->getBaseUrl() . 'wrong-id');
         $response->assertStatus(Response::HTTP_NOT_FOUND);
         $response->assertJsonFragment([
             'success' => 0,
@@ -282,8 +290,13 @@ abstract class TestCase extends BaseTestCase
         $this->test_can_create_with_valid_input_and_auth();
     }
 
-    protected function test_custom_filtering($page, $limit, $url, $resources, $headers = [])
-    {
+    protected function test_custom_filtering(
+        int $page,
+        int $limit,
+        string $url,
+        Collection|Model $resources,
+        array $headers = []
+    ): void {
 
         if ($this->filters) {
             forEach($this->filters as $filterKey => $filter) {
@@ -292,7 +305,9 @@ abstract class TestCase extends BaseTestCase
                         $params = http_build_query([
                             'page' => $page,
                             'limit' => $limit,
-                            $filterKey => $resources[0]->{$filterKey}[$filterVal]
+                            $filterKey => $resources
+                                ->first()
+                                ->{$filterKey}[$filterVal]
                         ]);
                         $response = $this->getJson($url . "?" . $params, $headers);
 
@@ -302,7 +317,9 @@ abstract class TestCase extends BaseTestCase
                     $params = http_build_query([
                         'page' => $page,
                         'limit' => $limit,
-                        $filter => $resources[0]->{$filter}
+                        $filter => $resources
+                        ->first()
+                        ->{$filter}
                     ]);
                     $response = $this->getJson($url . "?" . $params, $headers);
                     $response->assertJsonCount(1, 'data');
@@ -311,8 +328,14 @@ abstract class TestCase extends BaseTestCase
         }
     }
 
-    protected function test_basic_filtering($page, $limit, $url, $resources, $itemsCount, $headers = [])
-    {
+    protected function test_basic_filtering(
+        int $page,
+        int $limit,
+        string $url,
+        Collection|Model $resources,
+        int $itemsCount,
+        array $headers = []
+    ): void {
         $params = http_build_query([
             'page' => $page,
             'sortBy' => 'id',
@@ -321,7 +344,7 @@ abstract class TestCase extends BaseTestCase
         ]);
         $response = $this->getJson($url . "?" . $params, $headers);
         $response->assertJsonFragment([
-            'uuid' => $resources[$itemsCount - 2]->uuid
+            'uuid' => Optional($resources->get($itemsCount - 2))->uuid
         ]);
 
         $params = http_build_query([
@@ -334,8 +357,12 @@ abstract class TestCase extends BaseTestCase
         $response->assertJsonCount($limit, 'data');
     }
 
-    protected function test_listing($page, $limit, $url, $headers = [])
-    {
+    protected function test_listing(
+        int $page,
+        int $limit,
+        string $url,
+        array $headers = []
+    ): void {
         $params = http_build_query([
             'page' => $page,
             'limit' => $limit
@@ -369,8 +396,13 @@ abstract class TestCase extends BaseTestCase
         ]);
     }
 
-    protected function test_pagination($page, $limit, $url, $resources, $headers = [])
-    {
+    protected function test_pagination(
+        int $page,
+        int $limit,
+        string $url,
+        Collection|Model $resources,
+        array $headers = []
+    ): void {
         $page = 2;
         $params = http_build_query([
             'page' => $page,
@@ -379,12 +411,13 @@ abstract class TestCase extends BaseTestCase
         $response = $this->getJson($url . "?" . $params, $headers);
 
         $response->assertJsonFragment([
-            'uuid' => $resources[$page + $limit]->uuid
+            'uuid' => Optional($resources->get($page + $limit))->uuid
         ]);
     }
 
-    protected function test_cannot_delete_with_auth($resource)
-    {
+    protected function test_cannot_delete_with_auth(
+      Model|Collection $resource
+    ): void {
         $response = $this->deleteJson($this->getBaseUrl() . $resource->{$this->modelIdKey});
         $response->assertStatus(Response::HTTP_UNAUTHORIZED);
         $response->assertJson([
@@ -396,8 +429,9 @@ abstract class TestCase extends BaseTestCase
         ]);
     }
 
-    protected function test_can_delete_with_auth($resource)
-    {
+    protected function test_can_delete_with_auth(
+        Model|Collection $resource
+    ): void {
         $response = $this->deleteJson($this->getBaseUrl() . $resource->{$this->modelIdKey}, [], $this->getHeaders());
         $response->assertStatus(Response::HTTP_OK);
         $response->assertStatus(Response::HTTP_OK)
@@ -410,7 +444,7 @@ abstract class TestCase extends BaseTestCase
             ]);
     }
 
-    protected function test_cannot_create_without_auth_for_non_user_resource()
+    protected function test_cannot_create_without_auth_for_non_user_resource(): void
     {
         if ($this->resource != 'user') {
             $response = $this->postJson($this->getBaseUrl() . 'create', $this->invalidInput);
@@ -424,7 +458,7 @@ abstract class TestCase extends BaseTestCase
         }
     }
 
-    protected function test_cannot_create_with_invalid_input()
+    protected function test_cannot_create_with_invalid_input(): void
     {
         $response = $this->postJson(
             $this->getBaseUrl() . 'create',
@@ -435,7 +469,7 @@ abstract class TestCase extends BaseTestCase
         $response->assertJsonFragment($this->errorMsgs);
     }
 
-    protected function test_can_create_with_valid_input_and_auth()
+    protected function test_can_create_with_valid_input_and_auth(): void
     {
         $response = $this->postJson(
             $this->getBaseUrl(). 'create',
