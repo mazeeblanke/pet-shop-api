@@ -152,9 +152,6 @@ class Controller extends BaseController
         throw new Exception('Request class ' . $request . ' not found');
     }
 
-    /**
-     * @return  string
-     */
     protected function getRepositoryClass($model): string
     {
         $class = "{$this->namespace}\Repositories\\" . $model . 'Repository';
@@ -165,18 +162,12 @@ class Controller extends BaseController
         throw new Exception('Repository class ' . $class .  ' not found');
     }
 
-    /**
-     *
-     */
     protected function respondWithSuccess(JsonResource $resource): JsonResponse
     {
         return $resource->response()->setStatusCode(Response::HTTP_OK);
     }
 
-    /**
-     *
-     */
-    protected function respondWithError(string $message, $status = Response::HTTP_NOT_FOUND, $previousException = null)
+    protected function respondWithError(string $message, $status = Response::HTTP_NOT_FOUND, $previousException = null): void
     {
         throw new Exception($message, $status, $previousException);
     }

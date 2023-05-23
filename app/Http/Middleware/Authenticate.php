@@ -12,15 +12,11 @@ class Authenticate extends Middleware
 {
     /**
      * The authentication factory instance.
-     *
-     * @var \Illuminate\Contracts\Auth\Factory
      */
-    protected $auth;
+    protected \Illuminate\Contracts\Auth\Factory $auth;
 
     /**
      * Create a new middleware instance.
-     *
-     * @param  \Illuminate\Contracts\Auth\Factory  $auth
      *
      * @return void
      */
@@ -44,7 +40,7 @@ class Authenticate extends Middleware
         return $next($request);
     }
 
-    protected function handleError()
+    protected function handleError(): void
     {
         throw new Exception(
             Response::$statusTexts[Response::HTTP_UNAUTHORIZED],

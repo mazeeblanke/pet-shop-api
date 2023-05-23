@@ -20,9 +20,11 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property array|null $metadata
  * @property string|null $deleted_at
+ *
  * @property-read \App\Models\Brand|null $brand
  * @property-read \App\Models\Category|null $category
  * @property-read mixed $brand_uuid
+ *
  * @method static \Database\Factories\ProductFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder|Product filter(\App\Services\Filtering\Contracts\Filter $filters)
  * @method static \Illuminate\Database\Eloquent\Builder|Product newModelQuery()
@@ -38,6 +40,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  * @method static \Illuminate\Database\Eloquent\Builder|Product whereTitle($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Product whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Product whereUuid($value)
+ *
  * @mixin \Eloquent
  */
 class Product extends Model

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\AuthController;
 use App\Http\Requests\AuthenticateRequest;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 
@@ -58,11 +59,12 @@ class UserController extends AuthController
      *     ),
      * )
      */
-    public function login(AuthenticateRequest $request)
+    public function login(AuthenticateRequest $request): JsonResponse
     {
         $response = parent::login($request);
+        $user = request()->user();
 
-        if (! request()->user()->is_admin) {
+        if (isset($user) && ! $user->is_admin) {
             return $this->respondWithError('Failed to authenticate user', Response::HTTP_UNAUTHORIZED);
         }
 
@@ -98,7 +100,7 @@ class UserController extends AuthController
      *     ),
      * )
      */
-    public function logout()
+    public function logout(): JsonResponse
     {
         return parent::logout();
     }
@@ -190,7 +192,7 @@ class UserController extends AuthController
      *     ),
      * )
      */
-    public function index(Request $request)
+    public function index(Request $request): JsonResponse
     {
         return parent::index($request);
     }

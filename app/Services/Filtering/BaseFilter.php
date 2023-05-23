@@ -33,8 +33,6 @@ abstract class BaseFilter implements Filter
 
     /**
      * Create a new Filters instance.
-     *
-     * @param Request $request
      */
     public function __construct(Request $request)
     {
@@ -71,8 +69,6 @@ abstract class BaseFilter implements Filter
 
     /**
      * Filter the query by ordering.
-     *
-     * @return Builder
      */
     protected function orderByColumn(): Builder
     {

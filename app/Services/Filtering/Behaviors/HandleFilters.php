@@ -9,11 +9,6 @@ trait HandleFilters
 {
     /**
      * Apply all filters.
-     *
-     * @param  Builder   $query
-     * @param  Filter $filters
-     *
-     * @return Builder
      */
     public function scopeFilter(Builder $query, Filter $filters): Builder
     {
