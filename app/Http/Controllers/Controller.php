@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Repositories\Repository;
 use Exception;
 use Illuminate\Contracts\Cache\Repository as CacheRepository;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Foundation\Validation\ValidatesRequests;
@@ -14,6 +16,7 @@ use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Http\Response;
 use Illuminate\Routing\Controller as BaseController;
 use Str;
+use Throwable;
 
 /**
  * @OA\Info(
@@ -65,7 +68,7 @@ class Controller extends BaseController
     /**
      * Display resource listing.
      */
-    public function index(Request $request)
+    public function index(Request $request): JsonResponse
     {
         $filters = [
             'limit' => $request->get('limit', 10),
@@ -74,13 +77,15 @@ class Controller extends BaseController
 
         $data = $this->repository->get($filters, $this->with);
 
-        return $this->respondWithSuccess(new $this->collection($data));
+        $collection = $this->makeResource($data, true);
+
+        return $this->respondWithSuccess($collection);
     }
 
     /**
      * store a resource.
      */
-    public function store()
+    public function store(): JsonResponse
     {
         $request = $this->validateFormStoreRequest();
 
@@ -93,21 +98,22 @@ class Controller extends BaseController
         try {
             $model = $this->repository->create($data);
         } catch (Exception $e) {
-            return $this
-                ->respondWithError(
-                    'Failed to create new '. $this->getModelName(),
-                    Response::HTTP_UNPROCESSABLE_ENTITY,
-                    $e
-                );
+            $this->respondWithError(
+                'Failed to create new '. $this->getModelName(),
+                Response::HTTP_UNPROCESSABLE_ENTITY,
+                $e
+            );
         }
 
-        return $this->respondWithSuccess(new $this->resource($model));
+        $resource = $this->makeResource($model);
+
+        return $this->respondWithSuccess($resource);
     }
 
     /**
      * Display the specified resource.
      */
-    public function show($uuid)
+    public function show(string|int $uuid): JsonResponse
     {
         $cacheKey = 'model_'.$uuid.'_with_'.implode(',', $this->with);
         $ttl = config('cache.default_ttl');
@@ -118,30 +124,36 @@ class Controller extends BaseController
             });
 
         if (! $model) {
-            return $this->respondWithError(
+            $this->respondWithError(
                 $this->getModelName() . ' not found'
             );
         }
 
-        return $this->respondWithSuccess(new $this->resource($model));
+        $resource = $this->makeResource($model);
+
+        return $this->respondWithSuccess($resource);
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy($id)
+    public function destroy(string|int $id): JsonResponse
     {
         if ($this->repository->delete($id)) {
-            return $this->respondWithSuccess(new $this->resource(null));
+            $resource = $this->makeResource();
+
+            return $this->respondWithSuccess($resource);
         }
 
-        return $this->respondWithError($this->getModelName() .' not found');
+        $this->respondWithError($this->getModelName() .' not found');
     }
 
     /**
-     * retrieve form class
+     * Retrieve form class
+     *
+     * @throws Exception
      */
-    public function getFormRequestClass(string $type = 'store'): string|Exception
+    public function getFormRequestClass(string $type = 'store'): string
     {
         $request = "{$this->namespace}\Http\Requests\\" . ucfirst($type) . $this->modelName . 'Request';
 
@@ -152,7 +164,10 @@ class Controller extends BaseController
         throw new Exception('Request class ' . $request . ' not found');
     }
 
-    protected function getRepositoryClass($model): string
+    /**
+     * @throws Exception
+     */
+    protected function getRepositoryClass(string $model): string
     {
         $class = "{$this->namespace}\Repositories\\" . $model . 'Repository';
         if (class_exists($class)) {
@@ -162,12 +177,20 @@ class Controller extends BaseController
         throw new Exception('Repository class ' . $class .  ' not found');
     }
 
+    /**
+     * Returns success response
+     */
     protected function respondWithSuccess(JsonResource $resource): JsonResponse
     {
         return $resource->response()->setStatusCode(Response::HTTP_OK);
     }
 
-    protected function respondWithError(string $message, $status = Response::HTTP_NOT_FOUND, $previousException = null): void
+    /**
+     * Throws error and relys on the Exception class to handle the response
+     *
+     * @throws Exception
+     */
+    protected function respondWithError(string $message, int $status = Response::HTTP_NOT_FOUND, ?Throwable $previousException = null): void
     {
         throw new Exception($message, $status, $previousException);
     }
@@ -182,6 +205,8 @@ class Controller extends BaseController
 
     /**
      * Get Resource class
+     *
+     * @throws Exception
      */
     protected function getResourceClass(): string
     {
@@ -194,7 +219,25 @@ class Controller extends BaseController
     }
 
     /**
+     * Resolve an instance of the resource class from the container
+     *
+     * @return  JsonResource[return description]
+     */
+    protected function makeResource(Model|LengthAwarePaginator|array|null $data = null, bool $collection = false): JsonResource
+    {
+        $resource = $collection
+            ? $this->collection
+            : $this->resource;
+
+        return $this->app->make($resource, [
+            'resource' => $data ?? [],
+        ]);
+    }
+
+    /**
      * Get Collection class
+     *
+     * @throws Exception
      */
     protected function getCollectionClass(): string
     {

@@ -60,9 +60,9 @@ class Product extends Model
         'metadata',
     ];
 
-    public function getBrandUuidAttribute()
+    public function getBrandUuidAttribute(): ?string
     {
-        $metadata = $this->metadata;
+        $metadata = $this->metadata ?? [];
 
         if (! is_array($metadata)) {
             $metadata = json_decode($metadata, true);

@@ -50,10 +50,7 @@ class Handler extends ExceptionHandler
     {
         $errorCode = $e->status ?? $e->getCode() ?: 422;
 
-        // if ($request->expectsJson()) {
         return (new ErrorResource($e))->response()->setStatusCode($errorCode);
-        // }
 
-        return parent::render($request, $e);
     }
 }

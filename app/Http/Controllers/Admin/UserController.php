@@ -65,7 +65,7 @@ class UserController extends AuthController
         $user = request()->user();
 
         if (isset($user) && ! $user->is_admin) {
-            return $this->respondWithError('Failed to authenticate user', Response::HTTP_UNAUTHORIZED);
+            $this->respondWithError('Failed to authenticate user', Response::HTTP_UNAUTHORIZED);
         }
 
         return $response;

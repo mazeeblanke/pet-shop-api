@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\AuthenticateRequest;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 
@@ -57,12 +58,12 @@ class UserController extends AuthController
      *     ),
      * )
      */
-    public function login(AuthenticateRequest $request)
+    public function login(AuthenticateRequest $request): JsonResponse
     {
         $response = parent::login($request);
 
-        if (request()->user()->is_admin) {
-            return $this->respondWithError('Failed to authenticate user', Response::HTTP_UNAUTHORIZED);
+        if (Optional(request()->user())->is_admin) {
+            $this->respondWithError('Failed to authenticate user', Response::HTTP_UNAUTHORIZED);
         }
 
         return $response;
@@ -154,7 +155,7 @@ class UserController extends AuthController
      *     ),
      * )
      */
-    public function store()
+    public function store(): JsonResponse
     {
         return parent::store();
     }
@@ -188,7 +189,7 @@ class UserController extends AuthController
      *     ),
      * )
      */
-    public function logout()
+    public function logout(): JsonResponse
     {
         return parent::logout();
     }

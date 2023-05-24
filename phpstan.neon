@@ -12,3 +12,9 @@ parameters:
     checkMissingIterableValueType: false
 
     reportUnmatchedIgnoredErrors: false
+
+    checkGenericClassInNonGenericObjectType: false
+
+    earlyTerminatingMethodCalls:
+        App\Http\Controllers\Controller:
+            - respondWithError

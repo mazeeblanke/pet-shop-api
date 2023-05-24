@@ -50,7 +50,7 @@ class RouteServiceProvider extends ServiceProvider
         });
     }
 
-    protected function configureJWTAuth()
+    protected function configureJWTAuth(): void
     {
         if (! config('jwt.issuer')) {
             config()->set('jwt.issuer', url('/'));

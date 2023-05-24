@@ -9,6 +9,7 @@ use App\Services\Auth\Contracts\TokenManager;
 use App\Services\Auth\Events\EventFactory;
 use App\Services\Auth\HeaderTokenManager;
 use App\Services\Auth\JWTGuard;
+use Illuminate\Contracts\Auth\Guard;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 use Lcobucci\JWT\Configuration;
 use Lcobucci\JWT\Signer;

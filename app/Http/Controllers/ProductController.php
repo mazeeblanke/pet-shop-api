@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\UpdateProductRequest;
 use App\Models\Product;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class ProductController extends Controller
@@ -129,7 +130,7 @@ class ProductController extends Controller
      *     ),
      * )
      */
-    public function index(Request $request)
+    public function index(Request $request): JsonResponse
     {
         return parent::index($request);
     }
@@ -203,7 +204,7 @@ class ProductController extends Controller
      *     ),
      * )
      */
-    public function store()
+    public function store(): JsonResponse
     {
         return parent::store();
     }
@@ -249,7 +250,7 @@ class ProductController extends Controller
      *     ),
      * )
      */
-    public function show($uuid)
+    public function show(string|int $uuid): JsonResponse
     {
         return parent::show($uuid);
     }
@@ -303,7 +304,7 @@ class ProductController extends Controller
      *     ),
      * )
      */
-    public function destroy($id)
+    public function destroy(string|int $id): JsonResponse
     {
         return parent::destroy($id);
     }

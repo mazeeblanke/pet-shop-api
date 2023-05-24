@@ -4,11 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\AuthenticateRequest;
 use App\Services\Auth\JWT;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
 
 class AuthController extends Controller
 {
-    public function login(AuthenticateRequest $request)
+    public function login(AuthenticateRequest $request): JsonResponse
     {
         $user = null;
         $credentials = $request->only(['email', 'password']);
@@ -18,7 +19,7 @@ class AuthController extends Controller
         }
 
         if (! $user) {
-            return $this->respondWithError(
+            $this->respondWithError(
                 Response::$statusTexts[Response::HTTP_UNAUTHORIZED],
                 422
             );
@@ -28,15 +29,19 @@ class AuthController extends Controller
             'last_login_at' => date('Y-m-d H:i:s'),
         ]);
 
-        return $this->respondWithSuccess(new $this->resource([
+        $resource = $this->makeResource([
             'token' => JWT::getAccessToken(),
-        ]));
+        ]);
+
+        return $this->respondWithSuccess($resource);
     }
 
-    public function logout()
+    public function logout(): JsonResponse
     {
         auth()->guard()->logout();
 
-        return $this->respondWithSuccess(new $this->resource([]));
+        $resource = $this->makeResource();
+
+        return $this->respondWithSuccess($resource);
     }
 }

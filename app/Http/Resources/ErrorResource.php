@@ -16,7 +16,7 @@ class ErrorResource extends JsonResource
     public function toArray(Request $request): array
     {
         $errors = [];
-        $error = $this->getMessage();
+        $error = $this->resource->getMessage();
 
         if (isset($this->resource->validator)) {
             $errors = $this->resource->validator->errors();

@@ -2,8 +2,10 @@
 
 namespace App\Http\Middleware;
 
+use Closure;
 use Exception;
 use Illuminate\Contracts\Auth\Factory as Auth;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Routing\Controllers\Middleware;
@@ -25,15 +27,15 @@ class Authenticate extends Middleware
         $this->auth = $auth;
     }
 
-    public function handle(Request $request, $next, ?string $admin = null)
+    public function handle(Request $request, Closure $next, ?string $admin = null): JsonResponse
     {
         if (! $this->auth->guard()->check()) {
             $this->handleError();
         }
 
-        $user = auth()->guard()->user();
+        $user = $request->user();
 
-        if ($admin && ! $user->is_admin) {
+        if ($admin && $user && ! $user->is_admin) {
             $this->handleError();
         }
 
