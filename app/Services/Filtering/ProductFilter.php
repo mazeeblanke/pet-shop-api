@@ -3,6 +3,7 @@
 namespace App\Services\Filtering;
 
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Query\JoinClause;
 use Illuminate\Support\Facades\DB;
 
 class ProductFilter extends BaseFilter
@@ -32,7 +33,7 @@ class ProductFilter extends BaseFilter
     /**
      * Filter price.
      */
-    protected function price($value): Builder
+    protected function price(float $value): Builder
     {
         return $this->builder->wherePrice($value);
     }
@@ -40,7 +41,7 @@ class ProductFilter extends BaseFilter
     /**
      * Filter category.
      */
-    protected function category($value): Builder
+    protected function category(string $value): Builder
     {
         return $this
             ->builder
@@ -53,16 +54,16 @@ class ProductFilter extends BaseFilter
     /**
      * Filter brand.
      */
-    protected function brand($value): Builder
+    protected function brand(string $value): Builder
     {
         $joinOnColumn = DB::raw(
             "JSON_UNQUOTE(JSON_EXTRACT(products.metadata, '$.brand'))"
         );
+
         return $this->builder
             ->join(
                 'brands',
-                'brands.uuid',
-                $joinOnColumn
+                fn (JoinClause $join) => $join->on('brands.uuid', '=', $joinOnColumn)
             )
             ->where('brands.uuid', $value);
     }
