@@ -14,7 +14,8 @@ use Illuminate\Support\Str;
 
 abstract class TestCase extends BaseTestCase
 {
-    use CreatesApplication, RefreshDatabase;
+    use CreatesApplication;
+    use RefreshDatabase;
 
     /**
      * Factory to be used in test
@@ -116,7 +117,7 @@ abstract class TestCase extends BaseTestCase
         $admin = User::factory()->create([
             'email' => config('app.admin_email'),
             'password' => bcrypt(config('app.admin_password')),
-            'is_admin' => 1
+            'is_admin' => 1,
         ]);
         auth()->login($admin);
         $this->adminToken = JWT::getAccessToken();
@@ -130,6 +131,7 @@ abstract class TestCase extends BaseTestCase
     protected function getResource(): string
     {
         $resource = Str::lower($this->getTableName());
+
         return Str::singular($resource);
     }
 
@@ -137,7 +139,7 @@ abstract class TestCase extends BaseTestCase
     {
         return [
             'Authorization' => 'Bearer ' .
-            ($forAdmin ? $this->adminToken  : $this->token)
+            ($forAdmin ? $this->adminToken : $this->token),
         ];
     }
 
@@ -184,12 +186,13 @@ abstract class TestCase extends BaseTestCase
     protected function getData(
         array $resource,
         bool $ignoreNested = false
-    ): array
-    {
+    ): array {
         $data = [];
 
         foreach ($this->listFields as $key => $field) {
-            if ($ignoreNested) continue;
+            if ($ignoreNested) {
+                continue;
+            }
 
             if (is_array($field)) {
                 $nestedData = [];
@@ -199,6 +202,7 @@ abstract class TestCase extends BaseTestCase
                         $nestedData[$nestedField] = $resource[$key][$nestedField];
                     } else {
                         $nestedData = null;
+
                         break;
                     }
                 }
@@ -274,7 +278,7 @@ abstract class TestCase extends BaseTestCase
             'data' => $this->getData($response->json()['data']),
             'error' => null,
             'errors' => [],
-            'extra' => []
+            'extra' => [],
         ]);
     }
 
@@ -299,15 +303,15 @@ abstract class TestCase extends BaseTestCase
     ): void {
 
         if ($this->filters) {
-            forEach($this->filters as $filterKey => $filter) {
+            foreach($this->filters as $filterKey => $filter) {
                 if (is_array($filter)) {
-                    forEach($filter as $filterVal) {
+                    foreach($filter as $filterVal) {
                         $params = http_build_query([
                             'page' => $page,
                             'limit' => $limit,
                             $filterKey => $resources
                                 ->first()
-                                ->{$filterKey}[$filterVal]
+                                ->{$filterKey}[$filterVal],
                         ]);
                         $response = $this->getJson($url . "?" . $params, $headers);
 
@@ -319,7 +323,7 @@ abstract class TestCase extends BaseTestCase
                         'limit' => $limit,
                         $filter => $resources
                         ->first()
-                        ->{$filter}
+                        ->{$filter},
                     ]);
                     $response = $this->getJson($url . "?" . $params, $headers);
                     $response->assertJsonCount(1, 'data');
@@ -340,18 +344,18 @@ abstract class TestCase extends BaseTestCase
             'page' => $page,
             'sortBy' => 'id',
             'desc' => true,
-            'limit' => $limit
+            'limit' => $limit,
         ]);
         $response = $this->getJson($url . "?" . $params, $headers);
         $response->assertJsonFragment([
-            'uuid' => Optional($resources->get($itemsCount - 2))->uuid
+            'uuid' => Optional($resources->get($itemsCount - 2))->uuid,
         ]);
 
         $params = http_build_query([
             'page' => $page,
             'sortBy' => 'wrongcolumn',
             'desc' => true,
-            'limit' => $limit
+            'limit' => $limit,
         ]);
         $response = $this->getJson($url . "?" . $params, $headers);
         $response->assertJsonCount($limit, 'data');
@@ -365,7 +369,7 @@ abstract class TestCase extends BaseTestCase
     ): void {
         $params = http_build_query([
             'page' => $page,
-            'limit' => $limit
+            'limit' => $limit,
         ]);
         $response = $this->getJson($url . "?" . $params, $headers);
         $response->assertSuccessful();
@@ -386,13 +390,13 @@ abstract class TestCase extends BaseTestCase
                 '*' => [
                     'active',
                     'label',
-                    'url'
-                ]
+                    'url',
+                ],
             ],
             'next_page_url',
             'prev_page_url',
             'last_page',
-            'last_page_url'
+            'last_page_url',
         ]);
     }
 
@@ -406,17 +410,17 @@ abstract class TestCase extends BaseTestCase
         $page = 2;
         $params = http_build_query([
             'page' => $page,
-            'limit' => $limit
+            'limit' => $limit,
         ]);
         $response = $this->getJson($url . "?" . $params, $headers);
 
         $response->assertJsonFragment([
-            'uuid' => Optional($resources->get($page + $limit))->uuid
+            'uuid' => Optional($resources->get($page + $limit))->uuid,
         ]);
     }
 
     protected function test_cannot_delete_with_auth(
-      Model|Collection $resource
+        Model|Collection $resource
     ): void {
         $response = $this->deleteJson($this->getBaseUrl() . $resource->{$this->modelIdKey});
         $response->assertStatus(Response::HTTP_UNAUTHORIZED);
@@ -425,7 +429,7 @@ abstract class TestCase extends BaseTestCase
             'data' => [],
             'error' => Response::$statusTexts[Response::HTTP_UNAUTHORIZED],
             'errors' => [],
-            'trace' => []
+            'trace' => [],
         ]);
     }
 
@@ -440,7 +444,7 @@ abstract class TestCase extends BaseTestCase
                 "data" => [],
                 "error" => null,
                 "errors" => [],
-                "extra" => []
+                "extra" => [],
             ]);
     }
 
@@ -453,7 +457,7 @@ abstract class TestCase extends BaseTestCase
                 "success" => 0,
                 "data" => [],
                 "error" => Response::$statusTexts[Response::HTTP_UNAUTHORIZED],
-                "errors" => []
+                "errors" => [],
             ]);
         }
     }
@@ -482,7 +486,7 @@ abstract class TestCase extends BaseTestCase
             'data' => $this->createFields,
             'error',
             'errors',
-            'extra'
+            'extra',
         ]);
 
         $this->assertDatabaseHas(

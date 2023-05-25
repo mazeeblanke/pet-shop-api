@@ -16,12 +16,12 @@ class ProductTest extends TestCase
         'brand' => [
             'slug',
             'title',
-            'uuid'
+            'uuid',
         ],
         'category' => [
             'slug',
             'title',
-            'uuid'
+            'uuid',
         ],
         'category_uuid',
         'description',
@@ -31,7 +31,7 @@ class ProductTest extends TestCase
         ],
         'price',
         'title',
-        'uuid'
+        'uuid',
     ];
 
     /**
@@ -42,11 +42,11 @@ class ProductTest extends TestCase
         'title',
         'price',
         'category' => [
-            'uuid'
+            'uuid',
         ],
         'brand' => [
-            'uuid'
-        ]
+            'uuid',
+        ],
     ];
 
     /**
@@ -65,8 +65,8 @@ class ProductTest extends TestCase
             'category_uuid' => $category->uuid,
             'metadata' => json_encode([
                 'image' => 'string',
-                'brand' => $brand->uuid
-            ])
+                'brand' => $brand->uuid,
+            ]),
         ];
     }
 }

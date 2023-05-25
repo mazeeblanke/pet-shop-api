@@ -23,7 +23,7 @@ class UserTest extends TestCase
         'last_name',
         'phone_number',
         'updated_at',
-        'uuid'
+        'uuid',
     ];
 
     /**
@@ -60,7 +60,7 @@ class UserTest extends TestCase
             'avatar' => fake()->uuid(),
             'address' => fake()->streetAddress,
             'phone_number' => fake()->phoneNumber(),
-            'is_marketing' => fake()->randomElement([0, 1])
+            'is_marketing' => fake()->randomElement([0, 1]),
         ];
     }
 
@@ -108,17 +108,17 @@ class UserTest extends TestCase
     {
         $response = $this->postJson($this->getBaseUrl() . 'login', [
             'email' => $this->user->email,
-            'password' => $this->validInput['password']
+            'password' => $this->validInput['password'],
         ]);
         $response->assertStatus(Response::HTTP_OK);
         $response->assertJsonStructure([
             'success',
             'data' => [
-                'token'
+                'token',
             ],
             'error',
             'errors',
-            'extra'
+            'extra',
         ]);
     }
 
@@ -126,17 +126,17 @@ class UserTest extends TestCase
     {
         $response = $this->postJson($this->getBaseUrl('admin') . 'login', [
             'email' => config('app.admin_email'),
-            'password' => config('app.admin_password')
+            'password' => config('app.admin_password'),
         ]);
         $response->assertStatus(Response::HTTP_OK);
         $response->assertJsonStructure([
             'success',
             'data' => [
-                'token'
+                'token',
             ],
             'error',
             'errors',
-            'extra'
+            'extra',
         ]);
     }
 
@@ -144,7 +144,7 @@ class UserTest extends TestCase
     {
         $response = $this->postJson($this->getBaseUrl('admin') . 'login', [
             'email' => $this->user->email,
-            'password' => $this->validInput['password']
+            'password' => $this->validInput['password'],
         ]);
         $response->assertStatus(Response::HTTP_UNAUTHORIZED);
     }
@@ -153,7 +153,7 @@ class UserTest extends TestCase
     {
         $response = $this->postJson($this->getBaseUrl() . 'login', [
             'email' => config('app.admin_email'),
-            'password' => config('app.admin_password')
+            'password' => config('app.admin_password'),
         ]);
         $response->assertStatus(Response::HTTP_UNAUTHORIZED);
     }
@@ -168,7 +168,7 @@ class UserTest extends TestCase
             'data' => [],
             'error',
             'errors',
-            'extra'
+            'extra',
         ]);
     }
 

@@ -5,10 +5,9 @@ use Mazi\CurrencyConverter\Converter;
 use Mazi\CurrencyConverter\Symbol;
 use PHPUnit\Framework\TestCase;
 
-
 class ConverterTest extends TestCase
 {
-     /** @test */
+    /** @test */
     public function converter_can_change_amount_in_currency()
     {
         $eurobankDriver = $this->getMockForAbstractClass(

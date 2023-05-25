@@ -8,5 +8,5 @@ return [
     'permitted_for' => env('JWT_PERMITTED_FOR'),
     'signer' => env('JWT_SIGNER', '\Lcobucci\JWT\Signer\Hmac\Sha256'),
     'token_ttl' => env('JWT_TTL', 1000),
-    'server-key' => env('JWT_SERVER_KEY', '/storage/app/private-key.pem')
+    'server-key' => env('JWT_SERVER_KEY', '/storage/app/private-key.pem'),
 ];

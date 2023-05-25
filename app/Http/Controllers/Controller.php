@@ -37,7 +37,8 @@ use Throwable;
  */
 class Controller extends BaseController
 {
-    use AuthorizesRequests, ValidatesRequests;
+    use AuthorizesRequests;
+    use ValidatesRequests;
 
     protected Application $app;
 

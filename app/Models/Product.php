@@ -49,7 +49,8 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  */
 class Product extends Model implements Filterable
 {
-    use HasFactory, HandleFilters;
+    use HasFactory;
+    use HandleFilters;
 
     protected $casts = [
         'metadata' => 'array',

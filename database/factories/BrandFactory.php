@@ -23,7 +23,7 @@ class BrandFactory extends Factory
         return [
             'uuid' => fake()->uuid(),
             'title' => $title,
-            'slug' => $slug
+            'slug' => $slug,
         ];
     }
 }

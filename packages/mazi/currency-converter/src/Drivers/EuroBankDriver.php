@@ -37,7 +37,7 @@ class EuroBankDriver implements ConverterDriver
     /**
      * rates
      *
-     * @var string $baseCurrency
+     * @var string
      */
     protected array $rates;
 

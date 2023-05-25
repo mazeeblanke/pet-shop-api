@@ -66,7 +66,10 @@ use Laravel\Sanctum\HasApiTokens;
  */
 class User extends Authenticatable implements Filterable
 {
-    use HasApiTokens, HasFactory, Notifiable, HandleFilters;
+    use HasApiTokens;
+    use HasFactory;
+    use Notifiable;
+    use HandleFilters;
 
     /**
      * The attributes that are mass assignable.

@@ -78,7 +78,7 @@ return [
     */
 
     'exclude' => [
-       'packages/mazi/currency-converter'
+       'packages/mazi/currency-converter',
     ],
 
     'add' => [
@@ -109,7 +109,7 @@ return [
         ForbiddenPublicPropertySniff::class,
         DisallowEmptySniff::class,
         UselessOverridingMethodSniff::class,
-        ForbiddenSetterSniff::class
+        ForbiddenSetterSniff::class,
     ],
 
     'config' => [

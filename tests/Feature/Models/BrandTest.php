@@ -13,7 +13,7 @@ class BrandTest extends TestCase
     protected array $listFields = [
         'title',
         'uuid',
-        'slug'
+        'slug',
     ];
 
     /**
@@ -21,6 +21,6 @@ class BrandTest extends TestCase
      *
      */
     protected array $validInput = [
-        'title' => 'test'
+        'title' => 'test',
     ];
 }

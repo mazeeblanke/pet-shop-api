@@ -2,20 +2,18 @@
 
 namespace Tests\Feature\Models;
 
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 
 class CategoryTest extends TestCase
 {
-   /**
-     * Resource list fields
-     *
-    */
+    /**
+      * Resource list fields
+      *
+     */
     protected array $listFields = [
         'title',
         'uuid',
-        'slug'
+        'slug',
     ];
 
     /**
@@ -23,6 +21,6 @@ class CategoryTest extends TestCase
      *
      */
     protected array $validInput = [
-        'title' => 'test'
+        'title' => 'test',
     ];
 }

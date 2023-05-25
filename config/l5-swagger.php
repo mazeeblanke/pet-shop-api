@@ -40,7 +40,7 @@ return [
                 */
                 'annotations' => [
                     base_path('app'),
-                    base_path('packages/mazi/currency-converter/src')
+                    base_path('packages/mazi/currency-converter/src'),
                 ],
 
             ],

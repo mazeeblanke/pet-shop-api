@@ -29,8 +29,8 @@ class ProductFactory extends Factory
             'price' => fake()->unique()->randomFloat(2, 10, 100),
             'category_uuid' => $category->uuid,
             'metadata' => [
-                'brand' => $brand->uuid
-            ]
+                'brand' => $brand->uuid,
+            ],
         ];
 
         return $data;

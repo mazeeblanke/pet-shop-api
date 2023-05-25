@@ -64,6 +64,7 @@ abstract class BaseFilter implements Filter
     public function getFilters(): array
     {
         $filters = $this->request->only($this->filters);
+
         return array_filter($filters) + $this->defaultFilters;
     }
 

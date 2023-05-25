@@ -3,7 +3,6 @@
 namespace App\Services\Filtering\Contracts;
 
 use Illuminate\Database\Eloquent\Builder;
-use App\Services\Filtering\Contracts\Filter;
 
 /**
  * @mixin \Illuminate\Database\Eloquent\Model

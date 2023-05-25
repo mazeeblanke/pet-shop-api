@@ -36,7 +36,8 @@ use Illuminate\Database\Eloquent\Model;
  */
 class Brand extends Model implements Filterable
 {
-    use HasFactory, HandleFilters;
+    use HasFactory;
+    use HandleFilters;
 
     protected $fillable = [
         'title',

@@ -2,7 +2,6 @@
 
 namespace App\Repositories;
 
-use App\Services\Filtering\Behaviors\HandleFilters;
 use App\Services\Filtering\Contracts\Filter;
 use App\Services\Filtering\Contracts\Filterable;
 use Exception;
@@ -10,7 +9,6 @@ use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Database\Eloquent\Builder;
 
 abstract class Repository
 {
@@ -113,6 +111,7 @@ abstract class Repository
             if ($object->delete()) {
                 return true;
             }
+
             return false;
         }, 3);
     }

@@ -31,7 +31,7 @@ class UserFactory extends Factory
             'avatar' => fake()->uuid(),
             'address' => fake()->streetAddress,
             'phone_number' => fake()->phoneNumber(),
-            'is_marketing' => fake()->randomElement([0, 1])
+            'is_marketing' => fake()->randomElement([0, 1]),
         ];
     }
 

@@ -8,7 +8,6 @@ use Mazi\CurrencyConverter\ConverterFactory;
 use Mazi\CurrencyConverter\Exceptions\DriverNotFound;
 use PHPUnit\Framework\TestCase;
 
-
 class ConverterFactoryTest extends TestCase
 {
     /** @test */
@@ -22,7 +21,7 @@ class ConverterFactoryTest extends TestCase
                 $this->equalTo(ConfigRepository::class),
                 $this->equalTo(CacheRepository::class)
             ))
-           ->will($this->returnCallback(array($this, 'createMockInstance')));
+           ->will($this->returnCallback([$this, 'createMockInstance']));
 
 
         $this->assertInstanceOf(
@@ -34,7 +33,8 @@ class ConverterFactoryTest extends TestCase
         );
     }
 
-    public function createMockInstance($class) {
+    public function createMockInstance($class)
+    {
         return $this->createMock($class);
     }
 
