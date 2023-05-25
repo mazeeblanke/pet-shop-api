@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Services\Filtering\Behaviors\HandleFilters;
 use App\Services\Filtering\Contracts\Filter;
+use App\Services\Filtering\Contracts\Filterable;
 use Database\Factories\CategoryFactory;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -33,7 +34,7 @@ use Illuminate\Database\Eloquent\Model;
  *
  * @mixin \Eloquent
  */
-class Category extends Model
+class Category extends Model implements Filterable
 {
     use HasFactory, HandleFilters;
 

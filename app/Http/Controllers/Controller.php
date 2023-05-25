@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Repositories\Repository;
+use App\Services\Filtering\Contracts\Filterable;
 use Exception;
 use Illuminate\Contracts\Cache\Repository as CacheRepository;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
@@ -223,7 +224,7 @@ class Controller extends BaseController
      *
      * @return  JsonResource[return description]
      */
-    protected function makeResource(Model|LengthAwarePaginator|array|null $data = null, bool $collection = false): JsonResource
+    protected function makeResource(Filterable|Model|LengthAwarePaginator|array|null $data = null, bool $collection = false): JsonResource
     {
         $resource = $collection
             ? $this->collection

@@ -4,16 +4,17 @@ namespace App\Repositories;
 
 use App\Services\Filtering\Behaviors\HandleFilters;
 use App\Services\Filtering\Contracts\Filter;
+use App\Services\Filtering\Contracts\Filterable;
 use Exception;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Arr;
-use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Database\Eloquent\Builder;
 
 abstract class Repository
 {
-    protected Model $model;
+    protected Filterable|Model $model;
 
     protected string $modelIdKey = 'id';
 
@@ -33,15 +34,16 @@ abstract class Repository
     public function get(
         array $filters = [],
         array $with = []
-    ): LengthAwarePaginator | Collection {
+    ): LengthAwarePaginator {
         $limit = $filters['limit'];
         $page = $filters['page'];
+        $builder = $this->model;
 
-        $builder = $this->model->with($with);
-
-        if ($this->supportsFiltering()) {
+        if ($builder instanceof Filterable) {
             $builder = $builder->filter($this->getFilter());
         }
+
+        $builder = $builder->with($with);
 
         return $builder->paginate($limit, ['*'], 'page', $page);
     }
@@ -49,18 +51,18 @@ abstract class Repository
     /**
      * Fetch by id
      */
-    public function getById($uuid, array $with = []): Model|null
+    public function getById(string|int $id, array $with = []): Model|Filterable|null
     {
         return $this->model
             ->with($with)
-            ->where($this->modelIdKey, $uuid)
+            ->where($this->modelIdKey, $id)
             ->first();
     }
 
     /**
      *  store a resource
      */
-    public function create(array $fields): Model
+    public function create(array $fields): Model|Filterable
     {
         return DB::transaction(function () use ($fields) {
             $object = $this->model
@@ -80,7 +82,7 @@ abstract class Repository
     /**
      * Update fields
      */
-    public function update(mixed $id, array $fields): Model|bool
+    public function update(string|int $id, array $fields): Model|filterable|bool|null
     {
         return DB::transaction(function () use ($id, $fields) {
             $object = $this->model->where($this->modelIdKey, $id)->first();
@@ -100,7 +102,7 @@ abstract class Repository
     /**
      * Delete a resource
      */
-    public function delete($id): bool
+    public function delete(string|int $id): bool
     {
         return DB::transaction(function () use ($id) {
             $object = $this->model->where($this->modelIdKey, $id)->first();
@@ -118,7 +120,7 @@ abstract class Repository
     /**
      * Hook after create
      */
-    public function afterCreate($object): void
+    public function afterCreate(Model $object): void
     {
         $object->save();
     }
@@ -144,16 +146,5 @@ abstract class Repository
         }
 
         throw new Exception('Filter class ' . $filter . ' Does not exist');
-    }
-
-    /**
-     * Check for filtering support by model
-     */
-    private function supportsFiltering(): bool
-    {
-        return in_array(
-            HandleFilters::class,
-            class_uses($this->model)
-        );
     }
 }

@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Services\Filtering\Behaviors\HandleFilters;
 use App\Services\Filtering\Contracts\Filter;
+use App\Services\Filtering\Contracts\Filterable;
 use Database\Factories\ProductFactory;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -46,7 +47,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  *
  * @mixin \Eloquent
  */
-class Product extends Model
+class Product extends Model implements Filterable
 {
     use HasFactory, HandleFilters;
 

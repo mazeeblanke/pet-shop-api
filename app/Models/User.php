@@ -6,6 +6,7 @@ namespace App\Models;
 
 use App\Services\Filtering\Behaviors\HandleFilters;
 use App\Services\Filtering\Contracts\Filter;
+use App\Services\Filtering\Contracts\Filterable;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
@@ -63,7 +64,7 @@ use Laravel\Sanctum\HasApiTokens;
  *
  * @mixin \Eloquent
  */
-class User extends Authenticatable
+class User extends Authenticatable implements Filterable
 {
     use HasApiTokens, HasFactory, Notifiable, HandleFilters;
 
