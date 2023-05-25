@@ -79,7 +79,7 @@ class Controller extends BaseController
                 'originalAmount' => $amount,
                 'originalCurrency' => Symbol::EUR,
                 'targetCurrency' => $currency,
-                'convertedAmount' => $convertedAmount
+                'convertedAmount' => $convertedAmount,
             ],
             'error' => null,
             'errors' => [],

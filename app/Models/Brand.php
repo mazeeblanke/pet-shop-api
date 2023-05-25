@@ -3,6 +3,9 @@
 namespace App\Models;
 
 use App\Services\Filtering\Behaviors\HandleFilters;
+use App\Services\Filtering\Contracts\Filter;
+use Database\Factories\BrandFactory;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -16,17 +19,17 @@ use Illuminate\Database\Eloquent\Model;
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  *
- * @method static \Database\Factories\BrandFactory factory($count = null, $state = [])
- * @method static \Illuminate\Database\Eloquent\Builder|Brand filter(\App\Services\Filtering\Contracts\Filter $filters)
- * @method static \Illuminate\Database\Eloquent\Builder|Brand newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|Brand newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|Brand query()
- * @method static \Illuminate\Database\Eloquent\Builder|Brand whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Brand whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Brand whereSlug($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Brand whereTitle($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Brand whereUpdatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Brand whereUuid($value)
+ * @method static BrandFactory factory($count = null, $state = [])
+ * @method static Builder|Brand filter(Filter $filters)
+ * @method static Builder|Brand newModelQuery()
+ * @method static Builder|Brand newQuery()
+ * @method static Builder|Brand query()
+ * @method static Builder|Brand whereCreatedAt($value)
+ * @method static Builder|Brand whereId($value)
+ * @method static Builder|Brand whereSlug($value)
+ * @method static Builder|Brand whereTitle($value)
+ * @method static Builder|Brand whereUpdatedAt($value)
+ * @method static Builder|Brand whereUuid($value)
  *
  * @mixin \Eloquent
  */

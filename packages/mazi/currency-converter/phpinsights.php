@@ -1,5 +1,28 @@
 <?php
 
+use NunoMaduro\PhpInsights\Domain\Insights\ForbiddenDefineFunctions;
+use NunoMaduro\PhpInsights\Domain\Insights\ForbiddenFinalClasses;
+use NunoMaduro\PhpInsights\Domain\Insights\ForbiddenNormalClasses;
+use NunoMaduro\PhpInsights\Domain\Insights\ForbiddenTraits;
+use NunoMaduro\PhpInsights\Domain\Metrics\Architecture\Classes;
+use PHP_CodeSniffer\Standards\PSR12\Sniffs\Classes\ClassInstantiationSniff;
+use PhpCsFixer\Fixer\Comment\NoEmptyCommentFixer;
+use PhpCsFixer\Fixer\Operator\NewWithBracesFixer;
+use SlevomatCodingStandard\Sniffs\Classes\ForbiddenPublicPropertySniff;
+use SlevomatCodingStandard\Sniffs\Commenting\DocCommentSpacingSniff;
+use SlevomatCodingStandard\Sniffs\Commenting\UselessFunctionDocCommentSniff;
+use SlevomatCodingStandard\Sniffs\ControlStructures\DisallowEmptySniff;
+use SlevomatCodingStandard\Sniffs\ControlStructures\DisallowShortTernaryOperatorSniff;
+use SlevomatCodingStandard\Sniffs\Functions\UnusedParameterSniff;
+use SlevomatCodingStandard\Sniffs\Namespaces\AlphabeticallySortedUsesSniff;
+use SlevomatCodingStandard\Sniffs\TypeHints\DeclareStrictTypesSniff;
+use SlevomatCodingStandard\Sniffs\TypeHints\DisallowArrayTypeHintSyntaxSniff;
+use SlevomatCodingStandard\Sniffs\TypeHints\DisallowMixedTypeHintSniff;
+use SlevomatCodingStandard\Sniffs\TypeHints\NullableTypeForNullDefaultValueSniff;
+use SlevomatCodingStandard\Sniffs\TypeHints\ParameterTypeHintSniff;
+use SlevomatCodingStandard\Sniffs\TypeHints\PropertyTypeHintSniff;
+use SlevomatCodingStandard\Sniffs\TypeHints\ReturnTypeHintSniff;
+
 return [
 
     /*
@@ -15,7 +38,7 @@ return [
     |
     */
 
-    'preset' => 'default',
+    'preset' => 'laravel',
 
     /*
     |--------------------------------------------------------------------------
@@ -35,7 +58,7 @@ return [
     |
     */
 
-    'ide' => null,
+    'ide' => 'vscode',
 
     /*
     |--------------------------------------------------------------------------
@@ -53,14 +76,33 @@ return [
     ],
 
     'add' => [
-        //  ExampleMetric::class => [
-        //      ExampleInsight::class,
-        //  ]
+        Classes::class => [
+            ForbiddenFinalClasses::class,
+        ],
     ],
 
     'remove' => [
-        //  ExampleInsight::class,
-        'SlevomatCodingStandard\Sniffs\TypeHints\DeclareStrictTypesSniff',
+        AlphabeticallySortedUsesSniff::class,
+        DeclareStrictTypesSniff::class,
+        DisallowMixedTypeHintSniff::class,
+        ForbiddenDefineFunctions::class,
+        ForbiddenNormalClasses::class,
+        ForbiddenTraits::class,
+        ParameterTypeHintSniff::class,
+        PropertyTypeHintSniff::class,
+        ReturnTypeHintSniff::class,
+        UselessFunctionDocCommentSniff::class,
+        UnusedParameterSniff::class,
+        DocCommentSpacingSniff::class,
+        ClassInstantiationSniff::class,
+        NewWithBracesFixer::class,
+        NullableTypeForNullDefaultValueSniff::class,
+        DisallowArrayTypeHintSyntaxSniff::class,
+        NoEmptyCommentFixer::class,
+        DisallowShortTernaryOperatorSniff::class,
+        ForbiddenPublicPropertySniff::class,
+        DisallowEmptySniff::class,
+        DeclareStrictTypesSniff::class,
     ],
 
     'config' => [
@@ -81,11 +123,11 @@ return [
     */
 
     'requirements' => [
-        //        'min-quality' => 0,
-        //        'min-complexity' => 0,
-        //        'min-architecture' => 0,
-        //        'min-style' => 0,
-        //        'disable-security-check' => false,
+        'min-quality' => 85,
+        'min-complexity' => 85,
+        'min-architecture' => 85,
+        'min-style' => 85,
+     //    'disable-security-check' => false,
     ],
 
     /*

@@ -3,8 +3,7 @@
 namespace App\Services\Auth;
 
 use App\Services\Auth\Contracts\EventFactory;
-use App\Services\Auth\Contracts\JWTAuthenticatable;
-use App\Services\Auth\Contracts\StatefulGuard;
+use App\Services\Auth\Contracts\StatefulGuard as ContractsStatefulGuard;
 use App\Services\Auth\Contracts\TokenManager;
 use App\Services\Auth\Exceptions\BeforeValid;
 use App\Services\Auth\Exceptions\InvalidSignature;
@@ -13,6 +12,7 @@ use App\Services\Auth\Exceptions\NotPermitted;
 use App\Services\Auth\Exceptions\TokenExpired;
 use Exception;
 use Illuminate\Auth\GuardHelpers;
+use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Http\Request;
@@ -22,11 +22,12 @@ use Lcobucci\JWT\Parser;
 use Lcobucci\JWT\Signer;
 use Lcobucci\JWT\Signer\Key;
 use Lcobucci\JWT\Token;
+use Lcobucci\JWT\UnencryptedToken;
 use Lcobucci\JWT\Validation\Constraint\PermittedFor;
 use Lcobucci\JWT\Validation\Constraint\SignedWith;
 use Lcobucci\JWT\Validator;
 
-class JWTGuard implements StatefulGuard
+class JWTGuard implements ContractsStatefulGuard
 {
     use GuardHelpers;
 
@@ -68,7 +69,7 @@ class JWTGuard implements StatefulGuard
             ->createUserProvider($config['provider']);
     }
 
-    public function user()
+    public function user(): ?Authenticatable
     {
         if ($this->user) {
             return $this->user;
@@ -79,15 +80,19 @@ class JWTGuard implements StatefulGuard
 
     public function validate(array $credentials = []): bool
     {
+        if (! isset($this->user)) {
+            return false;
+        }
+
         return $this->validateCredentials($credentials, $this->user);
     }
 
-    public function attempt(array $credentials = [], $remember = false): bool
-    {
+    public function attempt(
+        array $credentials = [],
+        bool $remember = false
+    ): bool {
         $this->dispatchEvent(
-            $this
-                ->eventFactory
-                ->createAttemptingEvent($this->name, $credentials, $remember)
+            $this->eventFactory->createAttemptingEvent($this->name, $credentials, $remember)
         );
 
         $user = $this->provider->retrieveByCredentials($credentials);
@@ -107,13 +112,13 @@ class JWTGuard implements StatefulGuard
         return true;
     }
 
-    public function login(JWTAuthenticatable $user, $remember = false): void
+    public function login(Authenticatable $user, bool $remember = false): void
     {
         $this->setUser($user);
 
         $accessToken = $this->issueAccessToken($user);
 
-        $this->setAccessToken($accessToken);
+        $this->setUserAccessToken($accessToken);
 
         $this->dispatchEvent(
             $this
@@ -124,20 +129,20 @@ class JWTGuard implements StatefulGuard
 
     public function logout(): void
     {
-        $this->user = null;
         $this->accessToken = null;
 
-        $this->dispatchEvent(
-            $this
-                ->eventFactory
-                ->createLogoutEvent($this->name, $this->user)
-        );
+        if (isset($this->user)) {
+            $this->dispatchEvent(
+                $this->eventFactory->createLogoutEvent($this->name, $this->user)
+            );
+        }
+
+        $this->user = null;
     }
 
-    public function issueAccessToken(JWTAuthenticatable $user): Token
+    public function issueAccessToken(Authenticatable $user): Token
     {
         $issuedAt = new \DateTimeImmutable();
-        $claims = $user->getClaims();
 
         $this->builder = $this->builder
             ->issuedBy(config('jwt.issuer'))
@@ -151,10 +156,6 @@ class JWTGuard implements StatefulGuard
             $this->builder = $this->builder->expiresAt($expiresAt);
         }
 
-        foreach ($claims as $name => $value) {
-            $this->builder = $this->builder->withClaim($name, $value);
-        }
-
         return $this->builder->getToken(
             $this->app->get(Signer::class),
             $this->app->get(Key::class)
@@ -164,7 +165,7 @@ class JWTGuard implements StatefulGuard
     /**
      * Set access token object
      */
-    public function setAccessToken(Token $token): JWTGuard
+    public function setUserAccessToken(Token $token): JWTGuard
     {
         $this->accessToken = $token;
 
@@ -181,7 +182,7 @@ class JWTGuard implements StatefulGuard
 
     private function validateCredentials(
         array $credentials,
-        JWTAuthenticatable $user
+        Authenticatable $user
     ): bool {
         return $this
             ->provider
@@ -189,8 +190,6 @@ class JWTGuard implements StatefulGuard
     }
 
     /**
-     * @param   string  $accessToken
-     *
      * @throws InvalidToken
      *
      * @throws InvalidSignature
@@ -202,8 +201,8 @@ class JWTGuard implements StatefulGuard
      * @return  Token
      */
     private function getValidToken(
-        $accessToken
-    ): Token|null {
+        ?string $accessToken
+    ): ?Token {
         if (! $accessToken) {
             return null;
         }
@@ -214,33 +213,38 @@ class JWTGuard implements StatefulGuard
             throw new InvalidToken();
         }
 
-        if (! $this->validator->validate($token, new SignedWith(
-            $this->app->get(Signer::class),
-            $this->app->get(Key::class)
-        ))) {
-            throw new InvalidSignature();
-        }
-
-        if (! $this->validator->validate($token, new PermittedFor(
-            config('jwt.permitted_for')
-        ))) {
-            throw new NotPermitted();
-        }
-
-        if ($token->isExpired(now())) {
-            throw new TokenExpired();
-        }
-
-        if (! $token->hasBeenIssuedBefore(now())) {
-            throw new BeforeValid();
+        foreach ($this->validTokenRules($token) as $exceptionClass => $invalid) {
+            if ($invalid) {
+                throw new $exceptionClass();
+            }
         }
 
         return $token;
     }
 
+    /**
+     * @return  array<class-string<\Throwable>, bool>
+     */
+    private function validTokenRules(Token $token)
+    {
+        return [
+            TokenExpired::class => $token->isExpired(now()),
+            BeforeValid::class => ! $token->hasBeenIssuedBefore(now()),
+            NotPermitted::class => ! $this->validator
+                ->validate($token, new PermittedFor(
+                    config('jwt.permitted_for')
+                )),
+            InvalidSignature::class => ! $this->validator
+                ->validate($token, new SignedWith(
+                    $this->app->get(Signer::class),
+                    $this->app->get(Key::class)
+                )),
+        ];
+    }
+
     private function authenticateWithAccessToken(
         Request $request
-    ): JWTAuthenticatable|null {
+    ): ?Authenticatable {
         $accessToken = $this->getAccessTokenFromRequest($request);
 
         if (! $accessToken) {
@@ -253,7 +257,7 @@ class JWTGuard implements StatefulGuard
             return null;
         }
 
-        $this->setAccessToken($accessToken)->setUser($user);
+        $this->setUserAccessToken($accessToken)->setUser($user);
 
         return $user;
     }
@@ -265,16 +269,20 @@ class JWTGuard implements StatefulGuard
         return $this->getValidToken($accessToken);
     }
 
-    private function getUserByJWT($accessToken): JWTAuthenticatable|null
+    private function getUserByJWT(Token|UnencryptedToken $accessToken): ?Authenticatable
     {
+        if (! $accessToken instanceof UnencryptedToken) {
+            return null;
+        }
+
         $uuid = $accessToken->claims()->get('sub');
 
         return $this->provider->retrieveById($uuid);
     }
 
-    private function dispatchEvent($event): JWTGuard
+    private function dispatchEvent(object $event): JWTGuard
     {
-        if ($this->eventDispatcher) {
+        if (isset($this->eventDispatcher)) {
             $this->eventDispatcher->dispatch($event);
         }
 

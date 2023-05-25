@@ -10,7 +10,8 @@ use App\Services\Auth\Events\EventFactory;
 use App\Services\Auth\HeaderTokenManager;
 use App\Services\Auth\JWTGuard;
 use Illuminate\Contracts\Auth\Guard;
-use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
+use Illuminate\Foundation\Support\Providers\AuthServiceProvider
+as ServiceProvider;
 use Lcobucci\JWT\Configuration;
 use Lcobucci\JWT\Signer;
 use Lcobucci\JWT\Signer\Key;
@@ -68,14 +69,20 @@ class AuthServiceProvider extends ServiceProvider
 
     private function registerJWTGuard(): self
     {
-        $this->app->singleton(Guard::class, fn () => $this->app->get('auth')->guard());
+        $this->app->singleton(
+            Guard::class,
+            fn () => $this->app->get('auth')->guard()
+        );
 
         return $this;
     }
 
     private function registerEventFactory(): self
     {
-        $this->app->singleton(ContractsEventFactory::class, EventFactory::class);
+        $this->app->singleton(
+            ContractsEventFactory::class,
+            EventFactory::class
+        );
 
         return $this;
     }
@@ -100,7 +107,12 @@ class AuthServiceProvider extends ServiceProvider
 
     private function registerSecretKey(): self
     {
-        $this->app->singleton(Key::class, fn () => InMemory::plainText('my-key-as-plaintextmy-key-as-plaintext')); // use config to set the key
+        $this->app->singleton(
+            Key::class,
+            fn () => InMemory::plainText(
+                'my-key-as-plaintextmy-key-as-plaintext'
+            )
+        ); // use config to set the key
 
         return $this;
     }
@@ -108,11 +120,12 @@ class AuthServiceProvider extends ServiceProvider
     private function registerConfiguration(): self
     {
         if (config('jwt.isAsymmetric')) {
+            $serverKeyPath = base_path(config('jwt.server-key')) ?: ' ';
             $this->app->singleton(
                 Configuration::class,
                 fn () => Configuration::forAsymmetricSigner(
                     $this->app->get(Signer::class),
-                    InMemory::file(base_path(config('jwt.server-key'))),
+                    InMemory::file($serverKeyPath),
                     $this->app->get(Key::class)
                 )
             );

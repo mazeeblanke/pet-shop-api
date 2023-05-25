@@ -63,7 +63,11 @@ class ProductFilter extends BaseFilter
         return $this->builder
             ->join(
                 'brands',
-                fn (JoinClause $join) => $join->on('brands.uuid', '=', $joinOnColumn)
+                fn (JoinClause $join) => $join->on(
+                    'brands.uuid',
+                    '=',
+                    $joinOnColumn
+                )
             )
             ->where('brands.uuid', $value);
     }

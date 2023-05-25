@@ -51,6 +51,5 @@ class Handler extends ExceptionHandler
         $errorCode = $e->status ?? $e->getCode() ?: 422;
 
         return (new ErrorResource($e))->response()->setStatusCode($errorCode);
-
     }
 }

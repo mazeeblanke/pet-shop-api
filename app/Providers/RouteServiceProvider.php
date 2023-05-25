@@ -18,7 +18,9 @@ class RouteServiceProvider extends ServiceProvider
     public const HOME = '/home';
 
     /**
-     * Define your route model bindings, pattern filters, and other route configuration.
+     * Define your route model bindings,
+     *
+     * pattern filters, and other route configuration.
      */
     public function boot(): void
     {
@@ -46,7 +48,8 @@ class RouteServiceProvider extends ServiceProvider
     protected function configureRateLimiting(): void
     {
         RateLimiter::for('api', function (Request $request) {
-            return Limit::perMinute(6000)->by($request->user()?->id ?: $request->ip());
+            return Limit::perMinute(6000)
+                ->by($request->user()?->id ?: $request->ip());
         });
     }
 
