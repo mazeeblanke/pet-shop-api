@@ -87,10 +87,8 @@ class JWTGuard implements ContractsStatefulGuard
         return $this->validateCredentials($credentials, $this->user);
     }
 
-    public function attempt(
-        array $credentials = [],
-        bool $remember = false
-    ): bool {
+    public function attempt(array $credentials = [], bool $remember = false): bool
+    {
         $this->dispatchEvent(
             $this->eventFactory->createAttemptingEvent($this->name, $credentials, $remember)
         );
@@ -99,9 +97,7 @@ class JWTGuard implements ContractsStatefulGuard
 
         if (! ($user && $this->validateCredentials($credentials, $user))) {
             $this->dispatchEvent(
-                $this
-                    ->eventFactory
-                    ->createFailedEvent($this->name, $user, $credentials)
+                $this->eventFactory->createFailedEvent($this->name, $user, $credentials)
             );
 
             return false;
@@ -180,10 +176,8 @@ class JWTGuard implements ContractsStatefulGuard
         return Optional($this->accessToken)->toString();
     }
 
-    private function validateCredentials(
-        array $credentials,
-        Authenticatable $user
-    ): bool {
+    private function validateCredentials(array $credentials, Authenticatable $user): bool
+    {
         return $this
             ->provider
             ->validateCredentials($user, $credentials);
@@ -200,9 +194,8 @@ class JWTGuard implements ContractsStatefulGuard
      *
      * @return  Token
      */
-    private function getValidToken(
-        ?string $accessToken
-    ): ?Token {
+    private function getValidToken(?string $accessToken): ?Token
+    {
         if (! $accessToken) {
             return null;
         }
@@ -242,9 +235,8 @@ class JWTGuard implements ContractsStatefulGuard
         ];
     }
 
-    private function authenticateWithAccessToken(
-        Request $request
-    ): ?Authenticatable {
+    private function authenticateWithAccessToken(Request $request): ?Authenticatable
+    {
         $accessToken = $this->getAccessTokenFromRequest($request);
 
         if (! $accessToken) {
