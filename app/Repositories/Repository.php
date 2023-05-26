@@ -2,14 +2,15 @@
 
 namespace App\Repositories;
 
-use App\Services\Filtering\Contracts\Filter;
 use App\Services\Filtering\Contracts\Filterable;
-use Exception;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 
+/**
+ * @method getFilter()
+ */
 abstract class Repository
 {
     protected Filterable|Model $model;
@@ -29,10 +30,8 @@ abstract class Repository
     /**
      * Fetch all
      */
-    public function get(
-        array $filters = [],
-        array $with = []
-    ): LengthAwarePaginator {
+    public function get(array $filters = [], array $with = []): LengthAwarePaginator
+    {
         $limit = $filters['limit'];
         $page = $filters['page'];
         $builder = $this->model;
@@ -130,20 +129,5 @@ abstract class Repository
     protected function getReservedFields(): array
     {
         return $this->reservedFields;
-    }
-
-    /**
-     *  Get filter instance
-     */
-    private function getFilter(): Filter
-    {
-        $namepace = trim(app()->getNamespace(), '\\') . "\Services\Filtering\\";
-        $filter = $namepace . class_basename($this->model).'Filter';
-
-        if (class_exists($filter)) {
-            return app()->make($filter);
-        }
-
-        throw new Exception('Filter class ' . $filter . ' Does not exist');
     }
 }
