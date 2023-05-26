@@ -2,12 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\Concerns\Controller as ControllerConcern;
 use App\Repositories\Repository;
-use App\Services\Filtering\Contracts\Filterable;
 use Exception;
 use Illuminate\Contracts\Cache\Repository as CacheRepository;
-use Illuminate\Contracts\Pagination\LengthAwarePaginator;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Foundation\Validation\ValidatesRequests;
@@ -16,7 +14,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Http\Response;
 use Illuminate\Routing\Controller as BaseController;
-use Str;
+use Illuminate\Support\Str;
 use Throwable;
 
 /**
@@ -34,11 +32,15 @@ use Throwable;
  *   type="http",
  *   description=""
  * )
+ *
+ * @method getResourceClass()
+ * @method getCollectionClass()
  */
 class Controller extends BaseController
 {
     use AuthorizesRequests;
     use ValidatesRequests;
+    use ControllerConcern;
 
     protected Application $app;
 
@@ -151,35 +153,6 @@ class Controller extends BaseController
     }
 
     /**
-     * Retrieve form class
-     *
-     * @throws Exception
-     */
-    public function getFormRequestClass(string $type = 'store'): string
-    {
-        $request = "{$this->namespace}\Http\Requests\\" . ucfirst($type) . $this->modelName . 'Request';
-
-        if (class_exists($request)) {
-            return $request;
-        }
-
-        throw new Exception('Request class ' . $request . ' not found');
-    }
-
-    /**
-     * @throws Exception
-     */
-    protected function getRepositoryClass(string $model): string
-    {
-        $class = "{$this->namespace}\Repositories\\" . $model . 'Repository';
-        if (class_exists($class)) {
-            return $class;
-        }
-
-        throw new Exception('Repository class ' . $class .  ' not found');
-    }
-
-    /**
      * Returns success response
      */
     protected function respondWithSuccess(JsonResource $resource): JsonResponse
@@ -192,96 +165,11 @@ class Controller extends BaseController
      *
      * @throws Exception
      */
-    protected function respondWithError(string $message, int $status = Response::HTTP_NOT_FOUND, ?Throwable $previousException = null): void
-    {
+    protected function respondWithError(
+        string $message,
+        int $status = Response::HTTP_NOT_FOUND,
+        ?Throwable $previousException = null
+    ): void {
         throw new Exception($message, $status, $previousException);
-    }
-
-    /**
-     * Get Model name
-     */
-    protected function getModelName(): string
-    {
-        return preg_replace('/Controller$/', '', class_basename($this)) ?? $this->modelName;
-    }
-
-    /**
-     * Get Resource class
-     *
-     * @throws Exception
-     */
-    protected function getResourceClass(): string
-    {
-        $class = "{$this->namespace}\Http\Resources\\" . $this->modelName . 'Resource';
-        if (class_exists($class)) {
-            return $class;
-        }
-
-        throw new Exception('Resource class ' . $class . ' not found');
-    }
-
-    /**
-     * Resolve an instance of the resource class from the container
-     *
-     * @return  JsonResource[return description]
-     */
-    protected function makeResource(Filterable|Model|LengthAwarePaginator|array|null $data = null, bool $collection = false): JsonResource
-    {
-        $resource = $collection
-            ? $this->collection
-            : $this->resource;
-
-        return $this->app->make($resource, [
-            'resource' => $data ?? [],
-        ]);
-    }
-
-    /**
-     * Get Collection class
-     *
-     * @throws Exception
-     */
-    protected function getCollectionClass(): string
-    {
-        $class = "{$this->namespace}\Http\Resources\\" . $this->modelName . 'Collection';
-        if (class_exists($class)) {
-            return $class;
-        }
-
-        throw new Exception('Collection class ' . $class . ' not found');
-    }
-
-    /**
-     * Get Respository class
-     */
-    protected function getRepository(): Repository
-    {
-        return $this->app->make($this->getRepositoryClass($this->modelName));
-    }
-
-    /**
-     * Get Namespace
-     */
-    protected function getNamespace(): string
-    {
-        return $this->namespace ?? trim($this->app->getNamespace(), '\\');
-    }
-
-    /**
-     * validate request
-     */
-    protected function validateFormStoreRequest(): Request
-    {
-        return $this->app->make($this->getFormRequestClass());
-    }
-
-    /**
-     * extra data during create
-     */
-    protected function getExtraData(Request $request): array
-    {
-        return [
-            'slug' => Str::slug($request->title),
-        ];
     }
 }
