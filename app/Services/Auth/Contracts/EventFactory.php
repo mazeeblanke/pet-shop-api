@@ -17,7 +17,7 @@ interface EventFactory
 
     public function createLogoutEvent(string $guardName, Authenticatable $user): Logout;
 
-    public function createLoginEvent(string $guardName, Authenticatable $user,bool $remember = false): Login;
+    public function createLoginEvent(string $guardName, Authenticatable $user, bool $remember = false): Login;
 
     public function createFailedEvent(string $guardName, ?Authenticatable $user, array $credentials): Failed;
 }
